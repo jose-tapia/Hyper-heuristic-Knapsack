@@ -57,6 +57,6 @@ class Knapsack(object):
 def generateItemsList(vList: [int], wList: [int]):
     items = []
     if len(vList) == len(wList):
-        for id, v, w in zip(range(1, len(vList)), vList, wList):
+        for id, v, w in zip(range(1, len(vList)+1), vList, wList):
             items.append(Item(str(id), v, w)) 
     return items

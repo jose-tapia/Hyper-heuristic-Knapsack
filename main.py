@@ -19,7 +19,7 @@ if __name__ == '__main__':
     dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/Instances/test.txt"
     capacity, lenItems, values_set, weight_set = load_data(tapia_path)
     
-    heuristics = ['default', 'min_weight', 'max_value', 'max_ratio']
+    heuristics = ['max_value',  'min_weight', 'default', 'max_ratio']
 
     for heuristic in heuristics:
         kp = Knapsack(capacity)
