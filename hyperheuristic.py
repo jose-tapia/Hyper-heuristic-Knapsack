@@ -6,7 +6,7 @@ import pandas as pd
 def NormCorrelation(items: [Item]):
     x = [item.getValue() for item in items]
     y = [item.getWeight() for item in items]
-    return pd.Series(x).corr(pd.Series(y), method = 'pearson')/2+0.5
+    return pd.Series(x).corr(pd.Series(y), method = 'kendall')/2+0.5
     #return (np.corrcoef(x, y)[0, 1])/2+0.5
 
 class HyperHeuristicModel(object):
@@ -15,7 +15,10 @@ class HyperHeuristicModel(object):
         self.simple_heuristics = [Heuristic(heuristic) for heuristic in heuristics]
     
     def getHeuristic(self, items: [Item]):
-        print(NormCorrelation(items))
+        # print(NormCorrelation(items))
+        # for item in items:
+        #     print(item)
+        # print('----')
         if NormCorrelation(items) > 0.5:
             self.currentHeuristic = (self.currentHeuristic+1)%len(self.simple_heuristics)
         return self.currentHeuristic
