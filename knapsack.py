@@ -140,7 +140,7 @@ def load_data(path):
 
 if __name__ == '__main__':
     
-    knapsackCap,numItems, values_set, weight_set = load_data("/Volumes/GoogleDrive/My Drive/MCCNotes/MCC4/algorithms_course/first term/Algo_Project/drive-download-20210430T133911Z-001/Codes/Knapsack/Instances/GA-DEFAULT_20_003.kp")
+    knapsackCap,numItems, values_set, weight_set = load_data("/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/Instances/test.txt")
     items = buildOptions(values_set,weight_set)
 
     #examples = [5,10,20,30,40,50,100,150,180,200]
