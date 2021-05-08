@@ -83,7 +83,7 @@ def printSolver(items, knapsackCap, algorithm, show = True):
             for item in taken:
                 print('   ', item)
     elif algorithm == 'ksGreedy-MaxVal':
-        print(f'Algorithm: Greedy-MaxVal')
+        print(f'Algorithm: max-profit')
         strategy = Item.getValue #max Value 
         val,taken= ksGreedy(items,knapsackCap,strategy)
         if show : 
@@ -91,7 +91,7 @@ def printSolver(items, knapsackCap, algorithm, show = True):
             for item in taken:
                 print('   ', item)
     elif algorithm == 'ksGreedy-MinWeight':
-        print(f'Algorithm: Greedy-MinWeight')
+        print(f'Algorithm: min-weight')
         strategy = lambda x: 1/Item.getWeight(x) #min weight
         val,taken= ksGreedy(items,knapsackCap,strategy)
         if show : 
@@ -99,7 +99,7 @@ def printSolver(items, knapsackCap, algorithm, show = True):
             for item in taken:
                 print('   ', item)
     elif algorithm == 'ksGreedy-ValWeiRatio':
-        print(f'Algorithm: Greedy-ValWeightRatio')
+        print(f'Algorithm: max-profit/weight')
         strategy = Item.getRatio #ratio of value over size
         val,taken= ksGreedy(items,knapsackCap,strategy)
         if show : 
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     time4 = timeit.timeit('ksDP(items,knapsackCap)', number = 1 , globals = globals())
     print('Time: ',time4,'seconds.')
 
-    methods = ['Greedy-MaxVal','Greedy-MinWeight','Greedy-ValWeiRatio','DP']
+    methods = ['max-profit','min-weight','max-profit/weight','DP']
     vals = [val1, val2,val3,val4]
     times =[time1,time2,time3,time4]
     best_t = min(times)
