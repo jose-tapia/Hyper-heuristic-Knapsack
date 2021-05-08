@@ -38,7 +38,7 @@ def ksGreedy(items, knapsackCap, strategy):
             totalWeight += itemsCopy[i].getWeight()
     return (totalVal, taken)
 
-#Recursive Algorithm
+#Brute Force - Optimal Solution - High Time Complexity
 def ksRecursive(items,knapsackCap):
     '''
     Input: the list of items(objects with weight and value)  and the capacity of the knapsack
@@ -138,8 +138,8 @@ def printSolver(items, knapsackCap, algorithm, show = True):
             print(f'Value obtained  = {val}')
             for item in taken:
                 print('   ', item)
-    elif algorithm == 'ksRecursive':
-        print(f'Algorithm: Recursive')
+    elif algorithm == 'ksBruteForce':
+        print(f'Algorithm: BruteForce')
         val,taken= ksRecursive(items,knapsackCap)
         if show : 
             print(f'Value obtained  = {val}')
@@ -213,11 +213,11 @@ if __name__ == '__main__':
     time4 = timeit.timeit('ksDP(items,knapsackCap)', number = 1 , globals = globals())
     print('Time: ',time4,'seconds.')
     
-    val5 =printSolver(items, knapsackCap, 'ksRecursive', True)
+    val5 =printSolver(items, knapsackCap, 'ksBruteForce', True)
     time5 = timeit.timeit('ksRecursive(items,knapsackCap)', number = 1 , globals = globals())
     print('Time: ',time5,'seconds.')
 
-    methods = ['max-profit','min-weight','max-profit/weight','DP','Recursive']
+    methods = ['max-profit','min-weight','max-profit/weight','DP','BruteForce']
     vals = [val1, val2,val3,val4,val5]
     times =[time1,time2,time3,time4,time5]
     best_t = min(times)
