@@ -201,7 +201,7 @@ def load_data(path):
 
 if __name__ == '__main__':
     
-    knapsackCap,numItems, values_set, weight_set = load_data("/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/Instances/test.txt")
+    knapsackCap,numItems, values_set, weight_set = load_data("/Volumes/GoogleDrive/My Drive/MCCNotes/MCC4/algorithms_course/first term/Algo_Project/drive-download-20210430T133911Z-001/Codes/Knapsack/Instances/GA-MAXPROFITWEIGHT_20_024.kp")
     items = buildOptions(values_set,weight_set)
 
     #examples = [5,10,20,30,40,50,100,150,180,200]
@@ -239,7 +239,7 @@ if __name__ == '__main__':
     time5 = timeit.timeit('ksDP(items,knapsackCap)', number = 1 , globals = globals())
     print('Time: ',time5,'seconds.')
     
-    methods = ['max-profit','min-weight','max-profit/weight','greedy','DP']
+    methods = ['max-profit','min-weight','max-profit/weight','greedy-default','DP']
     vals = [val1, val2,val3,val4,val5]
     times =[time1,time2,time3,time4,time5]
     best_t = min(times)
