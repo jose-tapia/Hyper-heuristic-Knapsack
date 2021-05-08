@@ -39,25 +39,25 @@ def ksGreedy(items, knapsackCap, strategy):
     return (totalVal, taken)
 
 #Recursive Algorithm
-def ksRecursive(items,capAvail):
+def ksRecursive(items,knapsackCap):
     '''
     Input: the list of items(objects with weight and value)  and the capacity of the knapsack
     Returns: a tuple with total value and solution to the problem
     '''
-    if items == [] or capAvail == 0: #Base Cases
+    if items == [] or knapsackCap == 0: #Base Cases
         result = (0, ())
-    elif items[0].getWeight() > capAvail : #Capacity Constraint: if the weight of the
+    elif items[0].getWeight() > knapsackCap : #Capacity Constraint: if the weight of the
          #item is more than the capacity then it cannot be included
-        result = ksRecursive(items[1:], capAvail) #consider the following items
+        result = ksRecursive(items[1:], knapsackCap) #consider the following items
         
     else: # available space
         checkItem = items[0] 
         #Case 1 : evaluate when item is excluded 
         withoutValue, withoutItem = ksRecursive(items[1:], 
-                                            capAvail)
+                                            knapsackCap)
         #Case 2 : evaluate wjhen item is included 
         withValue, withItem = ksRecursive(items[1:],
-                                      capAvail-checkItem.getWeight())
+                                      knapsackCap-checkItem.getWeight())
         withValue += checkItem.getValue()
         
         #take the decision that maximizes Value
