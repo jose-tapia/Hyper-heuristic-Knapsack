@@ -24,10 +24,21 @@ def buildOptions( values, weights):
                           weights[i]))
     return items
 
+def defaultGreedy(items, knapsackCap):
+    
+    taken = []
+    totalVal, totalWeight = 0.0,0.0
+    for i in range(len(items)):
+        if (totalWeight + items[i].getWeight()) <= knapsackCap: #available resources
+            taken.append(items[i])
+            totalVal += items[i].getValue()
+            totalWeight += items[i].getWeight()
+    return (totalVal, taken)
 
 # A Greedy Approach: an approximate solution
 def ksGreedy(items, knapsackCap, strategy):
-        
+    
+    
     itemsCopy = sorted(items, key = strategy, reverse = True)
     taken = []
     totalVal, totalWeight = 0.0,0.0
@@ -138,8 +149,15 @@ def printSolver(items, knapsackCap, algorithm, show = True):
             print(f'Value obtained  = {val}')
             for item in taken:
                 print('   ', item)
-    elif algorithm == 'ksBruteForce':
-        print(f'Algorithm: BruteForce')
+    elif algorithm == 'ksGreedy':
+        print(f'Algorithm: greedy')
+        val,taken= defaultGreedy(items,knapsackCap)
+        if show : 
+            print(f'Value obtained  = {val}')
+            for item in taken:
+                print('   ', item)
+    elif algorithm == 'ksRecursive':
+        print(f'Algorithm: Brute Force')
         val,taken= ksRecursive(items,knapsackCap)
         if show : 
             print(f'Value obtained  = {val}')
@@ -207,19 +225,24 @@ if __name__ == '__main__':
     val3 = printSolver(items, knapsackCap,'ksGreedy-ValWeiRatio', True)
     time3 = timeit.timeit("ksGreedy(items,knapsackCap,Item.getRatio)", number = 1 , globals = globals())
     print('Time: ', time3, 'seconds.')
-
-
-    val4 =printSolver(items, knapsackCap, 'ksDP', True)
-    time4 = timeit.timeit('ksDP(items,knapsackCap)', number = 1 , globals = globals())
-    print('Time: ',time4,'seconds.')
     
-    val5 =printSolver(items, knapsackCap, 'ksBruteForce', True)
-    time5 = timeit.timeit('ksRecursive(items,knapsackCap)', number = 1 , globals = globals())
-    print('Time: ',time5,'seconds.')
+    val4 = printSolver(items, knapsackCap,'ksGreedy', True)
+    time4 = timeit.timeit("defaultGreedy(items,knapsackCap)", number = 1 , globals = globals())
+    print('Time: ', time4, 'seconds.')
 
-    methods = ['max-profit','min-weight','max-profit/weight','DP','BruteForce']
-    vals = [val1, val2,val3,val4,val5]
-    times =[time1,time2,time3,time4,time5]
+
+
+    val5 =printSolver(items, knapsackCap, 'ksDP', True)
+    time5 = timeit.timeit('ksDP(items,knapsackCap)', number = 1 , globals = globals())
+    print('Time: ',time5,'seconds.')
+    
+    val6 =printSolver(items, knapsackCap, 'ksRecursive', True)
+    time6 = timeit.timeit('ksRecursive(items,knapsackCap)', number = 1 , globals = globals())
+    print('Time: ',time6,'seconds.')
+
+    methods = ['max-profit','min-weight','max-profit/weight','greedy','DP','BruteForce']
+    vals = [val1, val2,val3,val4,val5,val6]
+    times =[time1,time2,time3,time4,time5,time6]
     best_t = min(times)
     best_v = max(vals)
     ix_t = times.index(best_t)
