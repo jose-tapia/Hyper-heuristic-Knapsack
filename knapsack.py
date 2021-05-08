@@ -92,8 +92,11 @@ def ksDP(items,knapsackCap):
     A = np.zeros([len(items),knapsackCap+1])
     for item in range(len(items)):
         for weight in range(knapsackCap+1):
-            if item == 0 or weight == 0:
-                A[item,weight] = 0 
+            if weight == 0:
+                A[item,weight] = 0
+            if item == 0 : 
+                if items[item].getWeight() <= weight:
+                    A[item,weight] = items[item].getValue()
             elif weight >= items[item].getWeight(): # if available space
                 A[item,weight] = max(A[item-1,weight], 
                                      A[item-1,weight-items[item].getWeight()] +
@@ -236,13 +239,9 @@ if __name__ == '__main__':
     time5 = timeit.timeit('ksDP(items,knapsackCap)', number = 1 , globals = globals())
     print('Time: ',time5,'seconds.')
     
-    val6 =printSolver(items, knapsackCap, 'ksRecursive', True)
-    time6 = timeit.timeit('ksRecursive(items,knapsackCap)', number = 1 , globals = globals())
-    print('Time: ',time6,'seconds.')
-
-    methods = ['max-profit','min-weight','max-profit/weight','greedy','DP','BruteForce']
-    vals = [val1, val2,val3,val4,val5,val6]
-    times =[time1,time2,time3,time4,time5,time6]
+    methods = ['max-profit','min-weight','max-profit/weight','greedy','DP']
+    vals = [val1, val2,val3,val4,val5]
+    times =[time1,time2,time3,time4,time5]
     best_t = min(times)
     best_v = max(vals)
     ix_t = times.index(best_t)
