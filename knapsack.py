@@ -38,6 +38,38 @@ def ksGreedy(items, knapsackCap, strategy):
             totalWeight += itemsCopy[i].getWeight()
     return (totalVal, taken)
 
+#Recursive Algorithm
+def ksRecursive(items,capAvail):
+    '''
+    Input: the list of items(objects with weight and value)  and the capacity of the knapsack
+    Returns: a tuple with total value and solution to the problem
+    '''
+    if items == [] or capAvail == 0: #Base Cases
+        result = (0, ())
+    elif items[0].getWeight() > capAvail : #Capacity Constraint: if the weight of the
+         #item is more than the capacity then it cannot be included
+        result = ksRecursive(items[1:], capAvail) #consider the following items
+        
+    else: # available space
+        checkItem = items[0] 
+        #Case 1 : evaluate when item is excluded 
+        withoutValue, withoutItem = ksRecursive(items[1:], 
+                                            capAvail)
+        #Case 2 : evaluate wjhen item is included 
+        withValue, withItem = ksRecursive(items[1:],
+                                      capAvail-checkItem.getWeight())
+        withValue += checkItem.getValue()
+        
+        #take the decision that maximizes Value
+        if withoutValue < withValue: # if the value by excluding the item is smaller 
+        #than the value by including the value
+            #include the item
+            result = (withValue, withItem +(checkItem,))
+        else: 
+            #exclude the item
+            result = (withoutValue, withoutItem)
+    return result
+
 
 # Dynamic Programming approach bottom-up Iterative 
 def ksDP(items,knapsackCap):
@@ -106,6 +138,14 @@ def printSolver(items, knapsackCap, algorithm, show = True):
             print(f'Value obtained  = {val}')
             for item in taken:
                 print('   ', item)
+    elif algorithm == 'ksRecursive':
+        print(f'Algorithm: Recursive')
+        val,taken= ksRecursive(items,knapsackCap)
+        if show : 
+            print(f'Value obtained  = {val}')
+            for item in taken:
+                print('   ', item)
+        
     print('-------------------------------------')
     return int(val)
 
@@ -172,10 +212,14 @@ if __name__ == '__main__':
     val4 =printSolver(items, knapsackCap, 'ksDP', True)
     time4 = timeit.timeit('ksDP(items,knapsackCap)', number = 1 , globals = globals())
     print('Time: ',time4,'seconds.')
+    
+    val5 =printSolver(items, knapsackCap, 'ksRecursive', True)
+    time5 = timeit.timeit('ksRecursive(items,knapsackCap)', number = 1 , globals = globals())
+    print('Time: ',time5,'seconds.')
 
-    methods = ['max-profit','min-weight','max-profit/weight','DP']
-    vals = [val1, val2,val3,val4]
-    times =[time1,time2,time3,time4]
+    methods = ['max-profit','min-weight','max-profit/weight','DP','Recursive']
+    vals = [val1, val2,val3,val4,val5]
+    times =[time1,time2,time3,time4,time5]
     best_t = min(times)
     best_v = max(vals)
     ix_t = times.index(best_t)
