@@ -62,7 +62,7 @@
 #define srand(x)     srand48x(x)
 #define randm(x)     (lrand48x() % (x))
 #define NO(f,i)      ((int) ((i+1)-f))
-typedef int (*funcptr) (const void *, const void *);
+typedef long long (*funcptr) (const void *, const void *);
 #define TRUE  1
 #define FALSE 0
 
@@ -71,8 +71,8 @@ typedef int (*funcptr) (const void *, const void *);
 				 type declarations
    ====================================================================== */
 
-typedef int   boolean; /* boolean variables */
-typedef long itype;   /* item profits and weights */
+typedef long long   boolean; /* boolean variables */
+typedef long long itype;   /* item profits and weights */
 typedef long long  stype;   /* sum of pofit or weight */
 
 /* item */
@@ -92,13 +92,13 @@ typedef struct {
 
 unsigned long _h48, _l48;
 
-void srand48x(long s)
+void srand48x(long long s)
 {
   _h48 = s;
   _l48 = 0x330E;
 }
 
-long lrand48x(void)
+long long lrand48x(void)
 {
   _h48 = (_h48 * 0xDEECE66D) + (_l48 * 0x5DEEC);
   _l48 = _l48 * 0xE66D + 0xB;
@@ -138,11 +138,11 @@ void pfree(void *p)
 void * palloc(size_t no, size_t each)
 {
   long size;
-  long *p;
+  long long *p;
 
-  size = no * (long) each;
+  size = no * (long long) each;
   if (size == 0) size = 1;
-  if (size != (size_t) size) error("alloc too big %ld", size);
+  if (size != (size_t) size) error("alloc too big %lld", size);
   p = malloc(size);
   if (p == NULL) error("no memory size %ld", size);
   return p;
@@ -176,9 +176,9 @@ void showitems(item *f, item *l, stype c)
 
   out = fopen(prefix, "w");
   if (out == NULL) error("no file");
-  fprintf(out, "%d, %d\n", NO(f, l), c);
+  fprintf(out, "%d, %lld\n", NO(f, l), c);
   for (i = f; i <= l; i++) {
-    fprintf(out, "%d, %d\n", i->p, i->w);
+    fprintf(out, "%lld, %lld\n", i->w, i->p);
   }
   fclose(out);
 }
@@ -188,13 +188,13 @@ void showitems(item *f, item *l, stype c)
                                 makecol
    ====================================================================== */
 
-int icomp(item *a, item *b) { return b->w - a->w; }
+long long icomp(item *a, item *b) { return b->w - a->w; }
 
 stype makecol(item *fitem, item *litem, itype rp, itype rw, stype b, int m)
 {
   register item *i, *k, *f, *l;
   register stype psum, wsum, csum;
-  int h, n, nn;
+  long long h, n, nn;
 
   nn = NO(fitem,litem);
   if (m > nn/2) m = nn/2;
@@ -226,10 +226,15 @@ stype makecol(item *fitem, item *litem, itype rp, itype rw, stype b, int m)
   for (i = f; i != k; i++) {
     i->p += psum;
     i->w += wsum;
+
+    if(i->p <= 0) i->p = 1;
+    if(i->w <= 0) i->w = 1;
   }
   for (i = k, h = n + 1; i <= l; i++, h++) {
     i->p  = (3*n + 1 - h) * psum;
     i->w  = (4*n - h) * wsum - i->w;
+    if(i->p <= 0) i->p = 1;
+    if(i->w <= 0) i->w = 1;
   }
   /* printf("psum %ld, wsum %ld, csum %ld\n", psum, wsum, csum); */
   return 3*n*wsum;
@@ -240,12 +245,12 @@ stype makecol(item *fitem, item *litem, itype rp, itype rw, stype b, int m)
 				maketest
    ====================================================================== */
 
-stype maketest(item *f, item *l, int r, int type, int v, int S)
+stype maketest(item *f, item *l, long long r, int type, long long v, long long int S)
 {
   register item *i, *j;
-  register stype wsum, psum, c;
-  int r1;
-  int n, m, k, h;
+  unsigned long long wsum, psum, c;
+  long long r1;
+  long long n, m, k, h;
 
   wsum = 0; psum = 0;
   r1 = r / 10;
@@ -312,9 +317,9 @@ stype maketest(item *f, item *l, int r, int type, int v, int S)
     if (i->w <= 0) i->w = 1;
     wsum += i->w; psum += i->p;
   }
-  c = (v * (double) wsum) / (S + 1);
+  c = (v * (long long) wsum) / (S + 1);
   for (i = f; i <= l; i++) if (i->w > c) c = i->w;
-  printf("test %d: wsum %ld, psum %ld, cap %ld\n", v, wsum, psum, c);
+  printf("test %d, %d: wsum %lld, psum %lld, cap %lld\n", num_type, num_case, wsum, psum, c);
   switch (type) {
     case  1: return c;
     case  2: return c;
@@ -343,7 +348,7 @@ stype maketest(item *f, item *l, int r, int type, int v, int S)
 void main(int argc, char *argv[])
 {
   item *f, *l;
-  int n, r, type, i, S;
+  long long n, r, type, i, S;
   stype c;
 
   /*
