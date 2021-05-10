@@ -2,7 +2,7 @@
 Hyper-heuristic implementation for the 0/1 Knapsack problem.
 
 
-# Authors 
+## Authors 
 
 Ramón Eduardo Díaz
 José Manuel Tapia 
