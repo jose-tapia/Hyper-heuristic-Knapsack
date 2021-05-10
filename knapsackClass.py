@@ -51,6 +51,11 @@ class Knapsack(object):
         else:
             return None
     
+    def printKnapsack(self):
+        print(self)
+        for item in self.items:
+            print('\t', item)
+
     def __str__(self):
         return f' Knapsack instance: <Capacity: {str(self.capacity)}, Value: {str(self.value)}, items: {str(len(self.items))}>'
 

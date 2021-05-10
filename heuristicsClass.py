@@ -1,6 +1,6 @@
 from knapsackClass import Item, Knapsack
 
-class Heuristic(object):
+class HeuristicModel(object):
     comparisons = {
         'default': lambda d, item: False, 
         'min_weight': lambda w, item: w.getWeight() > item.getWeight(), 
