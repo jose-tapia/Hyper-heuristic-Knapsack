@@ -1,3 +1,5 @@
+
+#%%
 import numpy as np
 import timeit
 import random 
@@ -13,6 +15,10 @@ class Item(object):
         return self.weight
     def getRatio(self):
         return self.getValue()/self.getWeight()
+    def getValuePouch(self,avgW):
+        return (self.getValue()*self.getWeight())/avgW
+    
+
     def __str__(self):
         return f' Item: {self.name}, <Value: {str(self.value)}, Weight: {str(self.weight)}>'
     
@@ -48,6 +54,21 @@ def ksGreedy(items, knapsackCap, strategy):
             totalVal += itemsCopy[i].getValue()
             totalWeight += itemsCopy[i].getWeight()
     return (totalVal, taken)
+
+# A Greedy Approach: an approximate solution
+def ksPouch(items, knapsackCap):
+    avgW = sum([item.getWeight() for item in items])/len(items)
+    items = [(item.getValuePouch(avgW),item.getWeight(),item.getValue(),idx) for idx,item in enumerate(items)]
+    itemsCopy = sorted(items, reverse = True)
+    taken = []
+    totalVal, totalWeight = 0.0,0.0
+    for i in range(len(itemsCopy)):
+        if (totalWeight + itemsCopy[i][1]) <= knapsackCap: #available resources
+            taken.append((itemsCopy[i][3],itemsCopy[i][2],itemsCopy[i][1]))
+            totalVal += itemsCopy[i][2]
+            totalWeight += itemsCopy[i][1]
+    return (totalVal, taken)
+
 
 #Brute Force - Optimal Solution - High Time Complexity
 def ksRecursive(items,knapsackCap):
@@ -136,6 +157,15 @@ def printSolver(items, knapsackCap, algorithm, show = True):
             print(f'Value obtained  = {val}')
             for item in taken:
                 print('   ', item)
+    elif algorithm == 'ksGreedy-Pouch':
+        print(f'Algorithm: Pouch')
+
+        val,taken= ksPouch(items,knapsackCap)
+        if show : 
+            print(f'Value obtained  = {val}')
+            for item in taken:
+                print('   ', item)
+
     elif algorithm == 'ksGreedy-MinWeight':
         print(f'Algorithm: min-weight')
         strategy = lambda x: 1/Item.getWeight(x) #min weight
@@ -152,8 +182,8 @@ def printSolver(items, knapsackCap, algorithm, show = True):
             print(f'Value obtained  = {val}')
             for item in taken:
                 print('   ', item)
-    elif algorithm == 'ksGreedy':
-        print(f'Algorithm: greedy')
+    elif algorithm == 'ksGreedy-Default':
+        print(f'Algorithm: Default')
         val,taken= defaultGreedy(items,knapsackCap)
         if show : 
             print(f'Value obtained  = {val}')
@@ -166,6 +196,7 @@ def printSolver(items, knapsackCap, algorithm, show = True):
             print(f'Value obtained  = {val}')
             for item in taken:
                 print('   ', item)
+
         
     print('-------------------------------------')
     return int(val)
@@ -201,7 +232,7 @@ def load_data(path):
 
 if __name__ == '__main__':
     
-    knapsackCap,numItems, values_set, weight_set = load_data("/Volumes/GoogleDrive/My Drive/MCCNotes/MCC4/algorithms_course/first term/Algo_Project/drive-download-20210430T133911Z-001/Codes/Knapsack/Instances/GA-MAXPROFITWEIGHT_20_024.kp")
+    knapsackCap,numItems, values_set, weight_set = load_data("/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/Instances/test.txt")
     items = buildOptions(values_set,weight_set)
 
     #examples = [5,10,20,30,40,50,100,150,180,200]
@@ -229,7 +260,7 @@ if __name__ == '__main__':
     time3 = timeit.timeit("ksGreedy(items,knapsackCap,Item.getRatio)", number = 1 , globals = globals())
     print('Time: ', time3, 'seconds.')
     
-    val4 = printSolver(items, knapsackCap,'ksGreedy', True)
+    val4 = printSolver(items, knapsackCap,'ksGreedy-Default', True)
     time4 = timeit.timeit("defaultGreedy(items,knapsackCap)", number = 1 , globals = globals())
     print('Time: ', time4, 'seconds.')
 
@@ -239,9 +270,15 @@ if __name__ == '__main__':
     time5 = timeit.timeit('ksDP(items,knapsackCap)', number = 1 , globals = globals())
     print('Time: ',time5,'seconds.')
     
-    methods = ['max-profit','min-weight','max-profit/weight','greedy-default','DP']
-    vals = [val1, val2,val3,val4,val5]
-    times =[time1,time2,time3,time4,time5]
+    val6 =printSolver(items, knapsackCap, 'ksGreedy-Pouch', True)
+    time6 = timeit.timeit('ksPouch(items,knapsackCap)', number = 1 , globals = globals())
+    print('Time: ',time6,'seconds.')
+
+    
+    
+    methods = ['max-profit','min-weight','max-profit/weight','greedy-default','DP','Pouch']
+    vals = [val1, val2,val3,val4,val5,val6]
+    times =[time1,time2,time3,time4,time5,time6]
     best_t = min(times)
     best_v = max(vals)
     ix_t = times.index(best_t)
@@ -251,3 +288,4 @@ if __name__ == '__main__':
     print('-------------------------------------')
     print(f'Best time: {best_t}, Method: {methods[ix_t]}.')
     print(f'Best value: {best_v}, Method: {methods[ix_v]}.')
+# %%
