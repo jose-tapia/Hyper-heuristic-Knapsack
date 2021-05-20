@@ -60,14 +60,19 @@ def ksPouch(items, knapsackCap):
     avgW = sum([item.getWeight() for item in items])/len(items)
     items = [(item.getValuePouch(avgW),item.getWeight(),item.getValue(),idx) for idx,item in enumerate(items)]
     itemsCopy = sorted(items, reverse = True)
-    taken = []
+    res = []
     totalVal, totalWeight = 0.0,0.0
     for i in range(len(itemsCopy)):
         if (totalWeight + itemsCopy[i][1]) <= knapsackCap: #available resources
-            taken.append((itemsCopy[i][3],itemsCopy[i][2],itemsCopy[i][1]))
+            res.append((itemsCopy[i][3],itemsCopy[i][2],itemsCopy[i][1]))
             totalVal += itemsCopy[i][2]
             totalWeight += itemsCopy[i][1]
-    return (totalVal, taken)
+    taken =[]
+    for n,v,w in res :
+        taken.append(Item(n,v,w))
+    
+    return totalVal, taken
+
 
 
 #Brute Force - Optimal Solution - High Time Complexity
@@ -138,6 +143,35 @@ def ksDP(items,knapsackCap):
             taken.append(items[i])
     return total_value,taken
 
+from ortools.algorithms import pywrapknapsack_solver
+
+def ksBB(items, knapsackCap):
+    solver = pywrapknapsack_solver.KnapsackSolver(
+    pywrapknapsack_solver.KnapsackSolver.
+    KNAPSACK_MULTIDIMENSION_BRANCH_AND_BOUND_SOLVER, 'KnapsackExample')
+    
+    values = list()
+    weights1 = list()
+    for item in range(len(items)):
+        values.append(items[item].getValue())
+        weights1.append(items[item].getWeight())
+
+    weights = [weights1]
+    capacities = [knapsackCap]
+    solver.Init(values, weights, capacities)
+    computed_value = solver.Solve()
+    packed_items = []
+    packed_weights = []
+    total_weight = 0
+    for i in range(len(values)):
+        if solver.BestSolutionContains(i):
+            packed_items.append(i)
+            packed_weights.append(weights[0][i])
+            total_weight += weights[0][i]
+    taken =[]
+    for j in packed_items :
+        taken.append(Item(str(j),values[j],weights1[j]))
+    return computed_value,taken
 
 #Print the solution
 def printSolver(items, knapsackCap, algorithm, show = True):
@@ -192,6 +226,13 @@ def printSolver(items, knapsackCap, algorithm, show = True):
     elif algorithm == 'ksRecursive':
         print(f'Algorithm: Brute Force')
         val,taken= ksRecursive(items,knapsackCap)
+        if show : 
+            print(f'Value obtained  = {val}')
+            for item in taken:
+                print('   ', item)
+    elif algorithm == 'ksBB':
+        print(f'Algorithm: IP')
+        val,taken= ksBB(items,knapsackCap)
         if show : 
             print(f'Value obtained  = {val}')
             for item in taken:
@@ -273,12 +314,14 @@ if __name__ == '__main__':
     val6 =printSolver(items, knapsackCap, 'ksGreedy-Pouch', True)
     time6 = timeit.timeit('ksPouch(items,knapsackCap)', number = 1 , globals = globals())
     print('Time: ',time6,'seconds.')
-
     
+    val7 =printSolver(items, knapsackCap, 'ksBB', True)
+    time7 = timeit.timeit('ksBB(items,knapsackCap)', number = 1 , globals = globals())
+    print('Time: ',time7,'seconds.')
     
-    methods = ['max-profit','min-weight','max-profit/weight','greedy-default','DP','Pouch']
-    vals = [val1, val2,val3,val4,val5,val6]
-    times =[time1,time2,time3,time4,time5,time6]
+    methods = ['max-profit','min-weight','max-profit/weight','greedy-default','DP','Pouch','Heuristic']
+    vals = [val1, val2,val3,val4,val5,val6,val7]
+    times =[time1,time2,time3,time4,time5,time6,time7]
     best_t = min(times)
     best_v = max(vals)
     ix_t = times.index(best_t)
