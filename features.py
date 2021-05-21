@@ -9,6 +9,12 @@ def getFeature(featureName: str, kp: Knapsack, items: [Item]):
     else:
         return None
 
+def getAllFeatures(kp: Knapsack, items: [Item]):
+    featuresValues = []
+    for featureName in listFeatures:
+        featuresValues.append(getFeature(featureName, kp, items))
+    return featuresValues
+
 def NormCorrelation(items: [Item]):
     x = [item.getValue() for item in items]
     y = [item.getWeight() for item in items]
