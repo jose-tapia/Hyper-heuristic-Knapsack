@@ -26,5 +26,5 @@ if __name__ == '__main__':
     items = generateItemsList(values_set, weight_set)
     print("Recursive: ", solver('recursive', kp, items))
 
-    df = [{"NormCorrelation":0.5, "NextHeuristic": "min_weight"}, {"NormCorrelation":0.1, "NextHeuristic": "max_ratio"}, {"NormCorrelation":0.8, "NextHeuristic": "max_value"}]
-    saveDataCSV("traindata.csv", df, ["NormCorrelation", "NextHeuristic"])
+    #df = [{"NORM_Correlation":0.5, "NextHeuristic": "min_weight"}, {"NormCorrelation":0.1, "NextHeuristic": "max_ratio"}, {"NormCorrelation":0.8, "NextHeuristic": "max_value"}]
+    #saveDataCSV("traindata.csv", df, ["NormCorrelation", "NextHeuristic"])

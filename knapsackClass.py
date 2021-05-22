@@ -1,27 +1,27 @@
 class Item(object):
-    def __init__(self, id, v: int, w: int):
+    def __init__(self, id, p: int, w: int):
         self.name = id
-        self.value = v
+        self.profit = p
         self.weight = w
     
     def getName(self):
         return self.name
 
-    def getValue(self):
-        return self.value
+    def getProfit(self):
+        return self.profit
 
     def getWeight(self):
         return self.weight
 
     def getRatio(self):
-        return self.getValue()/self.getWeight()
+        return self.getProfit()/self.getWeight()
 
     def __str__(self):
-        return f' Item: {self.name}, <Value: {str(self.value)}, Weight: {str(self.weight)}>'
+        return f' Item: {self.name}, <Profit: {str(self.profit)}, Weight: {str(self.weight)}>'
 
 class Knapsack(object):
-    def __init__(self, c: int):
-        self.capacity = c
+    def __init__(self, C: int):
+        self.capacity = C
         self.value = 0
         self.items = []
 
@@ -40,13 +40,13 @@ class Knapsack(object):
     def pack(self, item: Item):
         if item.getWeight() <= self.capacity:
             self.capacity -= item.getWeight()
-            self.value += item.getValue()
+            self.value += item.getProfit()
             self.items.append(item)
 
     def unpack(self, idx: int):
         if 0 <= idx and idx < len(self.items):
             self.capacity += self.items[idx].getWeight()
-            self.value -= self.items[idx].getValue()
+            self.value -= self.items[idx].getProfit()
             return self.items.pop(idx)
         else:
             return None

@@ -1,21 +1,26 @@
 from knapsackClass import Item, Knapsack
 import numpy as np
 
-listFeatures = ["NormCorrelation"]
+features = {
+    "NORM_MEAN_WEIGHT"  : lambda w, p: np.mean(w)/np.max(w),
+    "NORM_MEDIAN_WEIGHT": lambda w, p: np.median(w)/np.max(w), 
+    "NORM_STD_WEIGHT"   : lambda w, p: np.std(w)/np.max(w),
+    "NORM_MEAN_PROFIT"  : lambda w, p: np.mean(p)/np.max(p), 
+    "NORM_MEDIAN_PROFIT": lambda w, p: np.median(p)/np.max(p), 
+    "NORM_STD_PROFIT"   : lambda w, p: np.std(p)/np.max(p),
+    "NORM_CORRELATION"  : lambda w, p: np.corrcoef(w/np.max(w), p/np.max(p))[0, 1]/2+0.5
+}
 
-def getFeature(featureName: str, kp: Knapsack, items: [Item]):
-    if featureName == "NormCorrelation":
-        return NormCorrelation(items)
+def getFeature(featureName: str, items: [Item]):
+    w = [item.getWeight() for item in items]
+    p = [item.getProfit() for item in items]
+    if featureName in features:
+        return features[featureName](w, p)
     else:
+        print("Invalid feature: ", featureName)
         return None
 
-def getAllFeatures(kp: Knapsack, items: [Item]):
-    featuresValues = []
-    for featureName in listFeatures:
-        featuresValues.append(getFeature(featureName, kp, items))
-    return featuresValues
-
-def NormCorrelation(items: [Item]):
-    x = [item.getValue() for item in items]
-    y = [item.getWeight() for item in items]
-    return (np.corrcoef(x/np.max(x), y/np.max(y))[0, 1])/2+0.5
+def getAllFeatures(items: [Item]):
+    w = [item.getWeight() for item in items]
+    p = [item.getProfit() for item in items]
+    return [featureFunction(w, p) for featureFunction in features.values()]

@@ -3,18 +3,22 @@ import timeit
 import random 
 
 class Item(object):
-    def __init__(self, n, v, w):
+    def __init__(self, n, p, w):
         self.name = n
-        self.value = int(v)
+        self.profit = int(p)
         self.weight = int(w)
-    def getValue(self):
-        return self.value
+
+    def getProfit(self):
+        return self.profit
+
     def getWeight(self):
         return self.weight
+
     def getRatio(self):
-        return self.getValue()/self.getWeight()
+        return self.getProfit()/self.getWeight()
+
     def __str__(self):
-        return f' Item: {self.name}, <Value: {str(self.value)}, Weight: {str(self.weight)}>'
+        return f' Item: {self.name}, <Profit: {str(self.profit)}, Weight: {str(self.weight)}>'
     
 def buildOptions( values, weights):
     items = []
@@ -31,7 +35,7 @@ def defaultGreedy(items, knapsackCap):
     for i in range(len(items)):
         if (totalWeight + items[i].getWeight()) <= knapsackCap: #available resources
             taken.append(items[i])
-            totalVal += items[i].getValue()
+            totalVal += items[i].getProfit()
             totalWeight += items[i].getWeight()
     return (totalVal, taken)
 
@@ -45,7 +49,7 @@ def ksGreedy(items, knapsackCap, strategy):
     for i in range(len(itemsCopy)):
         if (totalWeight + itemsCopy[i].getWeight()) <= knapsackCap: #available resources
             taken.append(itemsCopy[i])
-            totalVal += itemsCopy[i].getValue()
+            totalVal += itemsCopy[i].getProfit()
             totalWeight += itemsCopy[i].getWeight()
     return (totalVal, taken)
 
@@ -69,7 +73,7 @@ def ksRecursive(items,knapsackCap):
         #Case 2 : evaluate wjhen item is included 
         withValue, withItem = ksRecursive(items[1:],
                                       knapsackCap-checkItem.getWeight())
-        withValue += checkItem.getValue()
+        withValue += checkItem.getProfit()
         
         #take the decision that maximizes Value
         if withoutValue < withValue: # if the value by excluding the item is smaller 
@@ -96,11 +100,11 @@ def ksDP(items,knapsackCap):
                 A[item,weight] = 0
             if item == 0 : 
                 if items[item].getWeight() <= weight:
-                    A[item,weight] = items[item].getValue()
+                    A[item,weight] = items[item].getProfit()
             elif weight >= items[item].getWeight(): # if available space
                 A[item,weight] = max(A[item-1,weight], 
                                      A[item-1,weight-items[item].getWeight()] +
-                                     items[item].getValue())
+                                     items[item].getProfit())
             else: #no space available
                 A[item, weight] = A[item-1, weight]
     #store results of knapsack
@@ -112,7 +116,7 @@ def ksDP(items,knapsackCap):
         if val <= 0 : break
         elif val == A[i-1,cap]: continue
         else: 
-            val = val - items[i].getValue()
+            val = val - items[i].getProfit()
             cap = cap - items[i].getWeight()
             taken.append(items[i])
     return total_value,taken
@@ -181,7 +185,7 @@ def buildInstance(num_items, max_V, max_W):
     values = []
     weights = []
     for i in random_items:
-        values.append(i.getValue())
+        values.append(i.getProfit())
         weights.append(i.getWeight())
     return random_items , values, weights
 

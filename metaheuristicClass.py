@@ -1,7 +1,7 @@
 from heuristicsClass import HeuristicModel
 from knapsackClass import Knapsack, Item
 from IO import saveDataCSV
-import features
+from features import features, getAllFeatures
 
 class MetaheuristicModel(object):
     def __init__(self):
@@ -25,8 +25,9 @@ class MetaheuristicModel(object):
         featureDataFrame = []
         for heuristicName in self.sequenceHeuristics:
             featureDict = dict()
-            for featureName in features.listFeatures:
-                featureDict[featureName] = features.getFeature(featureName, kp, items)
+            featureValues = getAllFeatures(items)
+            for name, value in zip(features.keys(), featureValues):
+                featureDict[name] = value
             featureDict['NextHeuristic'] = heuristicName
             featureDataFrame.append(featureDict)
 
@@ -35,4 +36,4 @@ class MetaheuristicModel(object):
             if nextItem is not None:
                 kp.pack(items[nextItem])
                 items.pop(nextItem)
-        saveDataCSV("traindata.csv", featureDataFrame, features.listFeatures+["NextHeuristic"])
+        saveDataCSV("traindata.csv", featureDataFrame, features.keys()+["NextHeuristic"])

@@ -1,6 +1,6 @@
 from knapsackClass import Knapsack, Item
 from heuristicsClass import HeuristicModel
-from features import NormCorrelation
+from features import getFeature
 
 class HyperHeuristicModel(object):
     def __init__(self, heuristics: [str]):
@@ -9,7 +9,7 @@ class HyperHeuristicModel(object):
     
     def getHeuristic(self, items: [Item]):
         pastHeuristic = self.currentHeuristic
-        if NormCorrelation(items) > 0.5:
+        if getFeature("NORM_CORRELATION", items) > 0.5:
             self.currentHeuristic = (self.currentHeuristic+1)%len(self.simple_heuristics)
         return pastHeuristic
     
