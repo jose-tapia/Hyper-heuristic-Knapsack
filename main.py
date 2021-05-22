@@ -8,6 +8,7 @@ if __name__ == '__main__':
     dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/Instances/"
 
     heuristics = ['default',  'min_weight','max_value',  'max_ratio']
+    """
     for i in range(1, 21):
         capacity, lenItems, values_set, weight_set = load_data(tapia_path+"Pisinger/pisinger_"+str(i)+".kp")
 
@@ -19,8 +20,8 @@ if __name__ == '__main__':
         items = generateItemsList(values_set, weight_set)
         B = solveMetaheuristic("RandomSearch", kp, items)
         if A != B:
-            print(i, "wowow\n")
-
+            print(i, "wowow\n", A, B)
+    """
     capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
     
 

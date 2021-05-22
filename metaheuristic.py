@@ -57,7 +57,7 @@ class Metaheuristic(object):
         return mh_str
 
 
-def SimulatedAnnealing(kp: Knapsack, items = [Item], n_iterations = 1001, temp = 200, stopCriteria = 10):
+def SimulatedAnnealing(kp: Knapsack, items: [Item], n_iterations = 1001, temp = 200, stopCriteria = 10):
     np.random.seed(0)
 
     mh = Metaheuristic()
@@ -71,16 +71,16 @@ def SimulatedAnnealing(kp: Knapsack, items = [Item], n_iterations = 1001, temp =
             break
         
         nextHeuristic = np.random.choice(heuristicNames)
-        nextItem = SimpleHeuristic(nextHeuristic).nextItem(kp, items)
+        kp_candidate = kp.copy()
+        items_candidate = items.copy()
+        nextItem = SimpleHeuristic(nextHeuristic).apply(kp_candidate, items_candidate)
         if nextItem == None:
             countNone += 1
             continue        
         countNone = 0
-        kp_candidate = kp.copy()
-        kp_candidate.pack(items[nextItem])
 
         if kp_best.getValue() < kp_candidate.getValue():
-            kp_best = kp_candidate
+            kp_best = kp_candidate.copy()
             mh_best = mh.copy()
             mh_best.addHeuristic(nextHeuristic)
 
@@ -88,8 +88,8 @@ def SimulatedAnnealing(kp: Knapsack, items = [Item], n_iterations = 1001, temp =
         t = temp/np.log(i+1)
         metropolis = np.exp(-diff/t)
         if diff < 0 or np.random.rand() < metropolis:
-            kp.pack(items[nextItem])
-            items.pop(nextItem)
+            kp = kp_candidate
+            items = items_candidate
             mh.addHeuristic(nextHeuristic)
         else:
             countNone += 1

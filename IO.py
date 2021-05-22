@@ -1,5 +1,6 @@
 import csv
 import os
+import pandas
 
 def load_data(path):
     file = open(path, "r")
@@ -20,18 +21,28 @@ def saveDataCSV(fileName, trainData: dict, labels: [str], overwrite = True):
     tapia_path = "C:/Users/Angel/Documents/Tec/1Semester/Fundamentos/Knapsack_project/Hyper-heuristic-Knapsack/"
     dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/"
     ramon_path = dany_path 
+
+    csvPath = tapia_path+fileName
     try:
+        labels += ['ID']
         if overwrite is False:    
-            file = open(tapia_path+fileName, "r")
+            file = open(csvPath, "r")
             if len(file.readline().split(',')) != len(labels):
                 overwrite = True
-
+            file.close()
+        instanceNumber = 1
+        if overwrite is False:
+            df = pandas.read_csv(csvPath)
+            if 'ID' in df.columns:
+                instanceNumber = max(df['ID'])+1
+ 
         modeAppend = 'w' if overwrite else 'a'
-        with open(tapia_path+fileName, modeAppend) as f:
+        with open(csvPath, modeAppend) as f:
             writer = csv.DictWriter(f, fieldnames = labels)
-            if os.stat(tapia_path+fileName).st_size == 0:
+            if os.stat(csvPath).st_size == 0:
                 writer.writeheader()
             for elem in trainData:
+                elem['ID'] = instanceNumber
                 writer.writerow(elem)
     except IOError:
         print("I/O error")    
