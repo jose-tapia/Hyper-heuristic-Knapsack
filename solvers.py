@@ -1,6 +1,6 @@
-from heuristicsClass import HeuristicModel
-from hyperheuristicClass import HyperHeuristicModel
-from knapsackClass import Item, Knapsack
+from simpleHeuristic import SimpleHeuristic
+from hyperheuristic import HyperHeuristic
+from knapsack import Item, Knapsack
 import numpy as np
 
 def ConstructiveSolution(items: [Item], kp: Knapsack, itemSelector):
@@ -52,10 +52,10 @@ def kpDP(items: [Item], capacity: int):
 
 def solver(method: str, kp: Knapsack, items: [Item], additionalArgs = None):
     if method == 'heuristic':
-        simple_heuristic = HeuristicModel(additionalArgs)
+        simple_heuristic = SimpleHeuristic(additionalArgs)
         return ConstructiveSolution(items, kp, simple_heuristic).getValue()
     elif method == 'hyperheuristic':
-        hh = HyperHeuristicModel(additionalArgs)
+        hh = HyperHeuristic(additionalArgs)
         return ConstructiveSolution(items, kp, hh).getValue()
     elif method == 'recursive':
         return kpBacktracking(items, kp.getCapacity()).getValue()

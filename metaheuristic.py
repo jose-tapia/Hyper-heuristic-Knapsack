@@ -1,9 +1,9 @@
-from heuristicsClass import HeuristicModel
-from knapsackClass import Knapsack, Item
+from simpleHeuristic import SimpleHeuristic
+from knapsack import Knapsack, Item
 from IO import saveDataCSV
 from features import features, getAllFeatures
 
-class MetaheuristicModel(object):
+class Metaheuristic(object):
     def __init__(self):
         self.sequenceHeuristics = []
 

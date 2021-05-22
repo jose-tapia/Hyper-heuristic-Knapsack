@@ -1,4 +1,4 @@
-from knapsackClass import Item, Knapsack, generateItemsList
+from knapsack import Item, Knapsack, generateItemsList
 from IO import load_data, saveDataCSV
 from solvers import solver
 

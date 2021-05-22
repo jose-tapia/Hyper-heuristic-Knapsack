@@ -1,4 +1,4 @@
-from knapsackClass import Item, Knapsack
+from knapsack import Item, Knapsack
 import numpy as np
 
 features = {
