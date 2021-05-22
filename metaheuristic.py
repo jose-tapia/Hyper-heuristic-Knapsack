@@ -19,25 +19,31 @@ class Metaheuristic(object):
             if nextItem is not None:
                 kp.pack(items[nextItem])
                 items.pop(nextItem)
-        return kp, items
+        return kp
     
-    def convertToDict(self, C, items = [Item]):
-        kp = Knapsack(C)
+    def convertToDict(self, C, items: [Item], backTime = 0, overwrite = False):
+        flatten = lambda t: [elem for sublist in t for elem in sublist]
+        labels = [feature+"_"+str(i) for i in range(backTime, -1, -1) for feature in features.keys()]
+        labels.append("NextHeuristic")
+
         featureDataFrame = []
+        featureDict = dict()
+        featuresMemory = [[None]*len(features.keys())]*(backTime+1)
+
+        kp = Knapsack(C)
         for heuristicName in self.sequenceHeuristics:
-            featureDict = dict()
-            featureValues = getAllFeatures(items)
-            for name, value in zip(features.keys(), featureValues):
+            featuresMemory.pop(0)
+            featuresMemory.append(getAllFeatures(items))
+            for name, value in zip(labels, flatten(featuresMemory)+[heuristicName]):
                 featureDict[name] = value
-            featureDict['NextHeuristic'] = heuristicName
-            featureDataFrame.append(featureDict)
+            featureDataFrame.append(featureDict.copy())
 
             heuristic = SimpleHeuristic(heuristicName)
             nextItem = heuristic.nextItem(kp, items)
             if nextItem is not None:
                 kp.pack(items[nextItem])
                 items.pop(nextItem)
-        saveDataCSV("traindata.csv", featureDataFrame, features.keys()+["NextHeuristic"])
+        saveDataCSV("traindata.csv", featureDataFrame, labels, overwrite)
 
     def copy(self):
         mh_copy = Metaheuristic()
@@ -87,9 +93,7 @@ def SimulatedAnnealing(kp: Knapsack, items = [Item], n_iterations = 1001, temp =
             mh.addHeuristic(nextHeuristic)
         else:
             countNone += 1
-
-    #print(mh_best)
-    return kp_best.getValue()
+    return kp_best, mh_best
 
 def RandomSearch(kp: Knapsack, items = [Item], stopCriteria = 10):
     np.random.seed(0)
@@ -101,13 +105,24 @@ def RandomSearch(kp: Knapsack, items = [Item], stopCriteria = 10):
     while countNone < stopCriteria:
         nextHeuristic = np.random.choice(heuristicNames)
         nextItem = SimpleHeuristic(nextHeuristic).nextItem(kp, items)
+
         if nextItem == None:
             countNone += 1
-        else:
-            countNone = 0
-            kp.pack(items[nextItem])
-            items.pop(nextItem)
-            mh.addHeuristic(nextHeuristic)
+            continue
+        countNone = 0
+        kp.pack(items[nextItem])
+        items.pop(nextItem)
+        mh.addHeuristic(nextHeuristic)
+    return kp, mh
 
-    #print(mh)
+def solveMetaheuristic(method: str, kp: Knapsack, items: [Item], saveMetaheuristic = False, backTime = 0, overwrite = False):
+    mh = Metaheuristic()
+    C = kp.getCapacity()
+    items_copy = items.copy()
+    if method == 'SimulatedAnnealing':
+        kp, mh = SimulatedAnnealing(kp, items)
+    else:
+        kp, mh = RandomSearch(kp, items)
+    if saveMetaheuristic:
+        mh.convertToDict(C, items_copy, backTime, overwrite)
     return kp.getValue()
