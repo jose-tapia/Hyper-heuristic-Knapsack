@@ -51,6 +51,12 @@ class Knapsack(object):
         else:
             return None
     
+    def copy(self):
+        kp = Knapsack(self.capacity)
+        kp.value = self.value
+        kp.items = self.items
+        return kp
+            
     def printKnapsack(self):
         print(self)
         for item in self.items:
