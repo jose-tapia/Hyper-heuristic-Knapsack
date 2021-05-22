@@ -11,17 +11,23 @@ class Metaheuristic(object):
     def addHeuristic(self, heuristicName: str):
         self.sequenceHeuristics.append(heuristicName)
     
-    def solveInstance(self, C, items = [Item]):
+    def cleanHeuristics(self, C, items: [Item]):
+        kp = Knapsack(C)
+        mh = []
+        for heuristicName in self.sequenceHeuristics:
+            nextItem = SimpleHeuristic(heuristicName).apply(kp, items)
+            if nextItem != None:
+                mh.append(heuristicName)
+        self.sequenceHeuristics = mh
+
+    def solveInstance(self, C, items: [Item]):
         kp = Knapsack(C)
         for heuristicName in self.sequenceHeuristics:
-            heuristic = SimpleHeuristic(heuristicName)
-            nextItem = heuristic.nextItem(kp, items)
-            if nextItem is not None:
-                kp.pack(items[nextItem])
-                items.pop(nextItem)
+            SimpleHeuristic(heuristicName).apply(kp, items)
+            
         return kp
     
-    def convertToDict(self, C, items: [Item], backTime = 0, overwrite = False):
+    def convertToDict(self, C, items: [Item], fileName = 'traindata.csv', backTime = 0, overwrite = False):
         flatten = lambda t: [elem for sublist in t for elem in sublist]
         labels = [feature+"_"+str(i) for i in range(backTime, -1, -1) for feature in features.keys()]
         labels.append("NextHeuristic")
@@ -38,12 +44,8 @@ class Metaheuristic(object):
                 featureDict[name] = value
             featureDataFrame.append(featureDict.copy())
 
-            heuristic = SimpleHeuristic(heuristicName)
-            nextItem = heuristic.nextItem(kp, items)
-            if nextItem is not None:
-                kp.pack(items[nextItem])
-                items.pop(nextItem)
-        saveDataCSV("traindata.csv", featureDataFrame, labels, overwrite)
+            SimpleHeuristic(heuristicName).apply(kp, items)
+        saveDataCSV(fileName, featureDataFrame, labels, overwrite)
 
     def copy(self):
         mh_copy = Metaheuristic()
@@ -66,6 +68,7 @@ def SimulatedAnnealing(kp: Knapsack, items: [Item], n_iterations = 1001, temp = 
 
     kp_best = kp.copy()
     mh_best = Metaheuristic()
+    n_iterations = max(n_iterations, 2*len(items))
     for i in range(1, n_iterations):
         if countNone == stopCriteria:
             break
@@ -104,18 +107,20 @@ def RandomSearch(kp: Knapsack, items = [Item], stopCriteria = 10):
 
     while countNone < stopCriteria:
         nextHeuristic = np.random.choice(heuristicNames)
-        nextItem = SimpleHeuristic(nextHeuristic).nextItem(kp, items)
+        kp_candidate = kp.copy()
+        items_candidate = items.copy()
+        nextItem = SimpleHeuristic(nextHeuristic).apply(kp_candidate, items_candidate)
 
-        if nextItem == None:
+        if nextItem == None or kp_candidate.getValue() <= kp.getValue():
             countNone += 1
             continue
         countNone = 0
-        kp.pack(items[nextItem])
-        items.pop(nextItem)
+        kp = kp_candidate
+        items = items_candidate
         mh.addHeuristic(nextHeuristic)
     return kp, mh
 
-def solveMetaheuristic(method: str, kp: Knapsack, items: [Item], saveMetaheuristic = False, backTime = 0, overwrite = False):
+def solveMetaheuristic(method: str, kp: Knapsack, items: [Item], saveMetaheuristic = False, fileName = 'traindata.csv', backTime = 0, overwrite = False):
     mh = Metaheuristic()
     C = kp.getCapacity()
     items_copy = items.copy()
@@ -124,5 +129,5 @@ def solveMetaheuristic(method: str, kp: Knapsack, items: [Item], saveMetaheurist
     else:
         kp, mh = RandomSearch(kp, items)
     if saveMetaheuristic:
-        mh.convertToDict(C, items_copy, backTime, overwrite)
+        mh.convertToDict(C, items_copy, fileName, backTime, overwrite)
     return kp.getValue()

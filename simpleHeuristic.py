@@ -29,8 +29,9 @@ class SimpleHeuristic(object):
     def apply(self, kp: Knapsack, items: [Item]):
         if self.onKP:
             idx = None
-            for i, item in enumerate(kp.getPackedItems()):
-                if idx == None or heuristicComparison[self.name](items[idx], item):
+            kp_packed = kp.getPackedItems()
+            for i, item in enumerate(kp_packed):
+                if idx == None or heuristicComparison[self.name](kp_packed[idx], item):
                     idx = i
             if idx != None:
                 items.append(kp.unpack(idx))

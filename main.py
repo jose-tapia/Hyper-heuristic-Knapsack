@@ -8,8 +8,10 @@ if __name__ == '__main__':
     dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/Instances/"
 
     heuristics = ['default',  'min_weight','max_value',  'max_ratio']
-    """
-    for i in range(1, 21):
+    
+    AB = 0
+    BA = 0
+    for i in range(31):
         capacity, lenItems, values_set, weight_set = load_data(tapia_path+"Pisinger/pisinger_"+str(i)+".kp")
 
         kp = Knapsack(capacity)
@@ -19,9 +21,14 @@ if __name__ == '__main__':
         kp = Knapsack(capacity)
         items = generateItemsList(values_set, weight_set)
         B = solveMetaheuristic("RandomSearch", kp, items)
-        if A != B:
-            print(i, "wowow\n", A, B)
-    """
+        
+        if A < B:
+            AB += 1
+        elif A > B:
+            BA += 1
+    print("SA < RS", AB)
+    print("RS < SA", BA)
+    
     capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
     
 
@@ -49,7 +56,7 @@ if __name__ == '__main__':
 
     kp = Knapsack(capacity)
     items = generateItemsList(values_set, weight_set)
-    print("Simulated Annealing: ", solveMetaheuristic("SimulatedAnnealing", kp, items, saveMetaheuristic = True, backTime = 2, overwrite = True))
+    print("Simulated Annealing: ", solveMetaheuristic("SimulatedAnnealing", kp, items, saveMetaheuristic = True, fileName = 'traindata.csv', backTime = 2, overwrite = True))
     
     kp = Knapsack(capacity)
     items = generateItemsList(values_set, weight_set)
@@ -57,7 +64,7 @@ if __name__ == '__main__':
     
     kp = Knapsack(capacity)
     items = generateItemsList(values_set, weight_set)
-    solveMetaheuristic("RandomSearch", kp, items, saveMetaheuristic = True, backTime = 2, overwrite = False)
+    solveMetaheuristic("RandomSearch", kp, items, saveMetaheuristic = True, fileName = 'traindata.csv', backTime = 2, overwrite = False)
     
     #df = [{"NORM_CORRELATION":0.5, "NextHeuristic": "min_weight"}, 
     #    {"NORM_CORRELATION":0.1, "NextHeuristic": "max_ratio"}, 
