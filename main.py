@@ -1,18 +1,6 @@
 from knapsackClass import Item, Knapsack, generateItemsList
 from IO import load_data
-from heuristicsClass import Heuristic
-from hyperheuristic import hyperheuristic
-
-def ConstructiveHeuristic(heuristic: str, kp: Knapsack, items: [Item]):
-    simple_heuristic = Heuristic(heuristic)
-
-    nextItem = simple_heuristic.nextItem(kp, items)
-    while nextItem is not None:
-        kp.pack(items[nextItem])
-        items.pop(nextItem)
-        nextItem = simple_heuristic.nextItem(kp, items)
-
-    return kp.getValue()
+from solvers import solver
 
 if __name__ == '__main__':
     tapia_path = "C:/Users/Angel/Documents/Tec/1Semester/Fundamentos/Knapsack_project/Hyper-heuristic-Knapsack/Instances/test.txt"
@@ -24,10 +12,18 @@ if __name__ == '__main__':
     for heuristic in heuristics:
         kp = Knapsack(capacity)
         items = generateItemsList(values_set, weight_set)
-        print(heuristic+": ", ConstructiveHeuristic(heuristic, kp, items))
+        print(heuristic+": ", solver('heuristic', kp, items, heuristic))
 
     kp = Knapsack(capacity)
     items = generateItemsList(values_set, weight_set)
-    print("HyperHeuristics: ", hyperheuristic(heuristics, kp, items))
+    print("HyperHeuristics: ", solver('hyperheuristic', kp, items, heuristics))
+
+    kp = Knapsack(capacity)
+    items = generateItemsList(values_set, weight_set)
+    print("DP: ", solver('DP', kp, items))
+
+    kp = Knapsack(capacity)
+    items = generateItemsList(values_set, weight_set)
+    print("Recursive: ", solver('recursive', kp, items))
 
     
