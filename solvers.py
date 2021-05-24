@@ -1,6 +1,6 @@
-from heuristicsClass import HeuristicModel
-from hyperheuristicClass import HyperHeuristicModel
-from knapsackClass import Item, Knapsack
+from simpleHeuristic import SimpleHeuristic
+from hyperheuristic import HyperHeuristic
+from knapsack import Item, Knapsack
 import numpy as np
 
 def ConstructiveSolution(items: [Item], kp: Knapsack, itemSelector):
@@ -9,31 +9,18 @@ def ConstructiveSolution(items: [Item], kp: Knapsack, itemSelector):
         kp.pack(items[nextItem])
         items.pop(nextItem)
         nextItem = itemSelector.nextItem(kp, items)
-    return kp.getValue()
-
-def kpHeuristic(items: [Item], kp: Knapsack, heuristic: str):
-    simple_heuristic = HeuristicModel(heuristic)
-    return ConstructiveSolution(items, kp, simple_heuristic)
-
-
-def kpHyperheuristic(items: [Item], kp: Knapsack, heuristics: [str]):
-    hh = HyperHeuristicModel(heuristics)
-    return ConstructiveSolution(items, kp, hh)
+    return kp
 
 def kpBacktracking(items: [Item], capacity: int):
-    '''
-    Input: the list of items(objects with weight and value)  and the capacity of the knapsack
-    Returns: a tuple with total value and solution to the problem
-    '''
     if items == [] or capacity == 0:
         return Knapsack(capacity)
-    
-    if items[0].getWeight() > capacity: 
+    item = items[0]
+    if item.getWeight() > capacity: 
         return kpBacktracking(items[1:], capacity)
     else: 
-        kpWithItem = kpBacktracking(items[1:], capacity - items[0].getWeight())
-        kpWithItem.capacity += items[0].getWeight()
-        kpWithItem.pack(items[0])
+        kpWithItem = kpBacktracking(items[1:], capacity - item.getWeight())
+        kpWithItem.capacity += item.getWeight()
+        kpWithItem.pack(item)
 
         kpWithoutItem = kpBacktracking(items[1:], capacity)
         
@@ -43,42 +30,33 @@ def kpBacktracking(items: [Item], capacity: int):
             return kpWithItem
 
 def kpDP(items: [Item], capacity: int):
-    '''
-    Input: the list of items(objects with weight and value)  and the capacity of the knapsack
-    Returns: a tuple with total value and a solution to the problem
-    '''
-    # Build matrix in a bottom up-manner 
     A = np.zeros((len(items)+1, capacity+1))
-    for idx, item in zip(range(1, 1+len(items)), items):
-        for w in range(capacity+1):
-            if w == 0:
+    for idx, item in enumerate(items, start = 1):
+        w, p = item.getWeight(), item.getProfit()
+        for W in range(capacity+1):
+            if W == 0:
                 continue
-            elif item.getWeight() <= w: 
-                if idx == 0:
-                    A[idx, w] = item.getValue()
-                else:
-                    A[idx, w] = max(A[idx-1, w], 
-                                A[idx-1, w-item.getWeight()] +
-                                           item.getValue())
+            elif idx == 0:
+                A[idx, W] = p if w <= W else 0
+            elif w <= W:
+                A[idx, W] = max(A[idx-1, W], A[idx-1, W-w]+p)
             else:
-                A[idx, w] = A[idx-1, w]
-    #store results of knapsack
-    val, cap = A[len(items), capacity], capacity
-    kp = Knapsack(capacity)
-    for idx in range(len(items), 0, -1):
-        if val <= 0: break
-        elif cap >= items[idx-1].getWeight() and val == A[idx-1, cap-items[idx-1].getWeight()]+items[idx-1].getValue():
-            val -= items[idx-1].getValue()
-            cap -= items[idx-1].getWeight()
+                A[idx, W] = A[idx-1, W]
+                
+    kp, idx = Knapsack(capacity), len(items)
+    while idx >= 1 and kp.getCapacity() > 0:
+        if A[idx-1, kp.getCapacity()] != A[idx, kp.getCapacity()]:
             kp.pack(items[idx-1])
+        idx -= 1            
     return kp
-
 
 def solver(method: str, kp: Knapsack, items: [Item], additionalArgs = None):
     if method == 'heuristic':
-        return kpHeuristic(items, kp, additionalArgs)
+        simple_heuristic = SimpleHeuristic(additionalArgs)
+        return ConstructiveSolution(items, kp, simple_heuristic).getValue()
     elif method == 'hyperheuristic':
-        return kpHyperheuristic(items, kp, additionalArgs)
+        hh = HyperHeuristic(additionalArgs)
+        return ConstructiveSolution(items, kp, hh).getValue()
     elif method == 'recursive':
         return kpBacktracking(items, kp.getCapacity()).getValue()
     elif method == 'DP':
