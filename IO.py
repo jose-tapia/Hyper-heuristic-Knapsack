@@ -18,7 +18,17 @@ def load_data(path):
 
     return knapsackCap, numItems, values_set, weight_set
 
-def saveDataCSV(fileName, trainData: dict, labels: List[str], overwrite = True):
+def saveDictCSV(fileName: str, dictData: dict):
+    tapia_path = "C:/Users/Angel/Documents/Tec/1Semester/Fundamentos/Knapsack_project/Hyper-heuristic-Knapsack/"
+    dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/"
+    ramon_path = dany_path 
+
+    csvPath = tapia_path+fileName
+    df = pandas.DataFrame(dictData)
+    df.to_csv(csvPath)
+
+
+def saveDataCSV(fileName: str, trainData: dict, labels: List[str], overwrite = True):
     tapia_path = "C:/Users/Angel/Documents/Tec/1Semester/Fundamentos/Knapsack_project/Hyper-heuristic-Knapsack/"
     dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/"
     ramon_path = dany_path 

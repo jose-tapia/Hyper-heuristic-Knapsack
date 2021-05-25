@@ -1,9 +1,10 @@
+import pandas as pd
 from LSTMModel import generateTrainDataset
-from numpy.lib.npyio import save
-from knapsack import Item, Knapsack, generateItemsList
-from IO import load_data, saveDataCSV
+from knapsack import  Knapsack, generateItemsList
+from IO import load_data, saveDictCSV
 from solvers import solver
 from metaheuristic import solveMetaheuristic
+from hyperheuristic import hyperheuristicSolver
 import numpy as np
 
 if __name__ == '__main__':
@@ -18,15 +19,14 @@ if __name__ == '__main__':
     for method in solverMethods:
         maxObtained[method] = 0
 
-#    generateTrainDataset()
+    #generateTrainDataset()
         
-#    capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
-#    kp = Knapsack(capacity)
-#    items = generateItemsList(values_set, weight_set)
-#    print(solver('hyperheuristic', kp, items, True))
+    capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
+    kp = Knapsack(capacity)
+    items = generateItemsList(values_set, weight_set)
+    #print(hyperheuristicSolver(kp, items, trainModel = True))
 
-
-    
+    resultsTestDict = dict()
     for i in range(1, 31):
         capacity, lenItems, values_set, weight_set = load_data(tapia_path+"Pisinger/pisinger_"+str(i)+".kp")
 
@@ -34,54 +34,15 @@ if __name__ == '__main__':
         for method in solverMethods:
             kp = Knapsack(capacity)
             items = generateItemsList(values_set, weight_set)
-            ans.append(solver(method, kp, items))
+            result = solver(method, kp, items)
+            ans.append(result)
+            if method not in resultsTestDict:
+                resultsTestDict[method] = []
+            resultsTestDict[method].append(result)
         print(ans)
+
         maxObtained[solverMethods[np.argmax(ans)]] += 1
     print(maxObtained)
 
-#        kp = Knapsack(capacity)
-#        items = generateItemsList(values_set, weight_set)
-#        B = solveMetaheuristic("RandomSearch", kp, items, saveMetaheuristic = True)
-#    print("SA < RS", AB)
-#    print("RS < SA", BA)
- 
-    
-
-
-
-    #for heuristic in heuristics:
-    #    kp = Knapsack(capacity)
-    #    items = generateItemsList(values_set, weight_set)
-    #    print(heuristic+": ", solver('heuristic', kp, items, heuristic))
-
-    #kp = Knapsack(capacity)
-    #items = generateItemsList(values_set, weight_set)
-    #print("HyperHeuristics: ", solver('hyperheuristic', kp, items, heuristics))
-
-    #kp = Knapsack(capacity)
-    #items = generateItemsList(values_set, weight_set)
-    #print("DP: ", solver('DP', kp, items))
-
-    #kp = Knapsack(capacity)
-    #items = generateItemsList(values_set, weight_set)
-    #print("Recursive: ", solver('recursive', kp, items))
-
-    #print("\n\n")
-
-    #kp = Knapsack(capacity)
-    #items = generateItemsList(values_set, weight_set)
-#    print("Simulated Annealing: ", solveMetaheuristic("SimulatedAnnealing", kp, items, saveMetaheuristic = True, fileName = 'traindata.csv', backTime = 0, overwrite = True))
-    
-    #kp = Knapsack(capacity)
-    #items = generateItemsList(values_set, weight_set)
-    #print("Random Search: ", solveMetaheuristic("RandomSearch", kp, items))
-    
-#    kp = Knapsack(capacity)
-#    items = generateItemsList(values_set, weight_set)
-#    print(solver('hyperheuristic', kp, items))
-#    solveMetaheuristic("RandomSearch", kp, items, saveMetaheuristic = True, fileName = 'traindata.csv', backTime = 0, overwrite = False)
-    
-    #df = [{"NORM_CORRELATION":0.5, "NextHeuristic": "min_weight"}, 
-    #    {"NORM_CORRELATION":0.1, "NextHeuristic": "max_ratio"}, 
-    #    {"NORM_CORRELATION":0.8, "NextHeuristic": "max_value"}]
-    #saveDataCSV("traindata.csv", df, ["NORM_CORRELATION", "NextHeuristic"])
+    saveDictCSV("testPisinger-MoreHeuristicsProbabilityNoLimited.csv", resultsTestDict)
+#   
