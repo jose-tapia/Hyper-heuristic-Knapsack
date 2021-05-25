@@ -1,0 +1,25 @@
+# %%
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import LSTM
+from keras.layers import TimeDistributed
+import tensorflow
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+plt.rc('font', size=15)
+
+df = pd.read_csv('traindata.csv', dtype={'ID': str})
+# %%
+n_id = len(df.ID.unique())
+model = tensorflow.keras.models.load_model('lstm_model.h5')
+#model.save('lstm_model.h5')
+# %%
+test = np.array([0.6151315789473685,0.75,0.32334037150482053,0.514391447368421,0.484375,0.3145416770940778,0.5226817436913052,1])
+test = np.pad(test, (0,n_id-1),'constant')
+test = np.array([test, test])
+X_test = test.reshape((1,2,(7+n_id)))
+yhat = model.predict(X_test)
+print(yhat)
+# %%
+

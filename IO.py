@@ -1,5 +1,6 @@
 import csv
 import os
+from typing import List
 import pandas
 
 def load_data(path):
@@ -17,7 +18,7 @@ def load_data(path):
 
     return knapsackCap, numItems, values_set, weight_set
 
-def saveDataCSV(fileName, trainData: dict, labels: [str], overwrite = True):
+def saveDataCSV(fileName, trainData: dict, labels: List[str], overwrite = True):
     tapia_path = "C:/Users/Angel/Documents/Tec/1Semester/Fundamentos/Knapsack_project/Hyper-heuristic-Knapsack/"
     dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/"
     ramon_path = dany_path 

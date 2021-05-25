@@ -1,7 +1,10 @@
+from LSTMModel import generateTrainDataset
+from numpy.lib.npyio import save
 from knapsack import Item, Knapsack, generateItemsList
 from IO import load_data, saveDataCSV
 from solvers import solver
 from metaheuristic import solveMetaheuristic
+import numpy as np
 
 if __name__ == '__main__':
     tapia_path = "C:/Users/Angel/Documents/Tec/1Semester/Fundamentos/Knapsack_project/Hyper-heuristic-Knapsack/Instances/"
@@ -9,40 +12,50 @@ if __name__ == '__main__':
 
     heuristics = ['default',  'min_weight','max_value',  'max_ratio']
     
-    AB = 0
-    BA = 0
-    for i in range(31):
+    solverMethods = ['SimulatedAnnealing', 'RandomSearch', 'hyperheuristic']
+    maxObtained = dict()
+    for method in solverMethods:
+        maxObtained[method] = 0
+
+    generateTrainDataset()
+        
+    capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
+    kp = Knapsack(capacity)
+    items = generateItemsList(values_set, weight_set)
+    print(solver('hyperheuristic', kp, items, True))
+
+
+    
+    for i in range(1, 31):
         capacity, lenItems, values_set, weight_set = load_data(tapia_path+"Pisinger/pisinger_"+str(i)+".kp")
 
-        kp = Knapsack(capacity)
-        items = generateItemsList(values_set, weight_set)
-        A = solveMetaheuristic("SimulatedAnnealing", kp, items)
+        ans = []
+        for method in solverMethods:
+            kp = Knapsack(capacity)
+            items = generateItemsList(values_set, weight_set)
+            ans.append(solver(method, kp, items))
+        maxObtained[solverMethods[np.argmax(ans)]] += 1
+    print(maxObtained)
 
-        kp = Knapsack(capacity)
-        items = generateItemsList(values_set, weight_set)
-        B = solveMetaheuristic("RandomSearch", kp, items)
-        
-        if A < B:
-            AB += 1
-        elif A > B:
-            BA += 1
-    print("SA < RS", AB)
-    print("RS < SA", BA)
-    
+#        kp = Knapsack(capacity)
+#        items = generateItemsList(values_set, weight_set)
+#        B = solveMetaheuristic("RandomSearch", kp, items, saveMetaheuristic = True)
+#    print("SA < RS", AB)
+#    print("RS < SA", BA)
+ 
     capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
     
 
 
 
+    #for heuristic in heuristics:
+    #    kp = Knapsack(capacity)
+    #    items = generateItemsList(values_set, weight_set)
+    #    print(heuristic+": ", solver('heuristic', kp, items, heuristic))
 
-    for heuristic in heuristics:
-        kp = Knapsack(capacity)
-        items = generateItemsList(values_set, weight_set)
-        print(heuristic+": ", solver('heuristic', kp, items, heuristic))
-
-    kp = Knapsack(capacity)
-    items = generateItemsList(values_set, weight_set)
-    print("HyperHeuristics: ", solver('hyperheuristic', kp, items, heuristics))
+    #kp = Knapsack(capacity)
+    #items = generateItemsList(values_set, weight_set)
+    #print("HyperHeuristics: ", solver('hyperheuristic', kp, items, heuristics))
 
     #kp = Knapsack(capacity)
     #items = generateItemsList(values_set, weight_set)
@@ -52,19 +65,20 @@ if __name__ == '__main__':
     #items = generateItemsList(values_set, weight_set)
     #print("Recursive: ", solver('recursive', kp, items))
 
-    print("\n\n")
+    #print("\n\n")
 
-    kp = Knapsack(capacity)
-    items = generateItemsList(values_set, weight_set)
-    print("Simulated Annealing: ", solveMetaheuristic("SimulatedAnnealing", kp, items, saveMetaheuristic = True, fileName = 'traindata.csv', backTime = 2, overwrite = True))
+    #kp = Knapsack(capacity)
+    #items = generateItemsList(values_set, weight_set)
+#    print("Simulated Annealing: ", solveMetaheuristic("SimulatedAnnealing", kp, items, saveMetaheuristic = True, fileName = 'traindata.csv', backTime = 0, overwrite = True))
     
-    kp = Knapsack(capacity)
-    items = generateItemsList(values_set, weight_set)
-    print("Random Search: ", solveMetaheuristic("RandomSearch", kp, items))
+    #kp = Knapsack(capacity)
+    #items = generateItemsList(values_set, weight_set)
+    #print("Random Search: ", solveMetaheuristic("RandomSearch", kp, items))
     
-    kp = Knapsack(capacity)
-    items = generateItemsList(values_set, weight_set)
-    solveMetaheuristic("RandomSearch", kp, items, saveMetaheuristic = True, fileName = 'traindata.csv', backTime = 2, overwrite = False)
+#    kp = Knapsack(capacity)
+#    items = generateItemsList(values_set, weight_set)
+#    print(solver('hyperheuristic', kp, items))
+#    solveMetaheuristic("RandomSearch", kp, items, saveMetaheuristic = True, fileName = 'traindata.csv', backTime = 0, overwrite = False)
     
     #df = [{"NORM_CORRELATION":0.5, "NextHeuristic": "min_weight"}, 
     #    {"NORM_CORRELATION":0.1, "NextHeuristic": "max_ratio"}, 

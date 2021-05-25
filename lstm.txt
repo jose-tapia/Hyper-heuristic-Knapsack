@@ -70,8 +70,18 @@ def train_lstm(data, n_id, n_output, lag, neuron1, neuron2, batch_size, epochs):
     plt.show()
 
     return model, X_train
+# %% 
+def buildModel(modelPath, trainPath):
+    df = pd.read_csv(trainPath, dtype={'ID': str})
+    n_id = len(df.ID.unique())
+    n_output = len(df.NextHeuristic.unique())
+    df = create_dummies(df, 'ID', prefix='ID')
+    df = create_dummies(df, 'NextHeuristic')
+    tensorflow.keras.backend.clear_session()
+    model, X_train = train_lstm(data=df, n_id=n_id, n_output=n_output, lag=2, neuron1=50, neuron2=30, batch_size=64, epochs=100)
+    model.save(modelPath)
 # %%
-df = pd.read_csv('traindata_.csv', dtype={'ID': str})
+df = pd.read_csv('traindata.csv', dtype={'ID': str})
 # %%
 n_id = len(df.ID.unique())
 n_output = len(df.NextHeuristic.unique())
@@ -82,10 +92,13 @@ df = create_dummies(df, 'NextHeuristic')
 # %%
 tensorflow.keras.backend.clear_session()
 model, X_train = train_lstm(data=df, n_id=n_id, n_output=n_output, lag=2, neuron1=50, neuron2=30, batch_size=64, epochs=100)
+model.save('lstm_model.h5')
 # %%
 test = np.array([0.6151315789473685,0.75,0.32334037150482053,0.514391447368421,0.484375,0.3145416770940778,0.5226817436913052,1])
+test = np.array([0.6151315789473685,0.75,0.32334037150482053,0.514391447368421,0.484375,0.3145416770940778,0.5226817436913052,1])
 test = np.pad(test, (0,n_id-1),'constant')
-X_test = test.reshape((1,1,(7+n_id)))
+test = np.array([test, test])
+X_test = test.reshape((1,2,(7+n_id)))
 yhat = model.predict(X_test)
 yhat
 # %%

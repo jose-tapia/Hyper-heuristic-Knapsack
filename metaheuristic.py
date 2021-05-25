@@ -1,3 +1,4 @@
+from typing import List
 from simpleHeuristic import SimpleHeuristic, heuristicComparison
 from knapsack import Knapsack, Item
 from IO import saveDataCSV
@@ -11,7 +12,7 @@ class Metaheuristic(object):
     def addHeuristic(self, heuristicName: str):
         self.sequenceHeuristics.append(heuristicName)
     
-    def cleanHeuristics(self, C, items: [Item]):
+    def cleanHeuristics(self, C, items: List[Item]):
         kp = Knapsack(C)
         mh = []
         for heuristicName in self.sequenceHeuristics:
@@ -20,14 +21,14 @@ class Metaheuristic(object):
                 mh.append(heuristicName)
         self.sequenceHeuristics = mh
 
-    def solveInstance(self, C, items: [Item]):
+    def solveInstance(self, C, items: List[Item]):
         kp = Knapsack(C)
         for heuristicName in self.sequenceHeuristics:
             SimpleHeuristic(heuristicName).apply(kp, items)
             
         return kp
     
-    def convertToDict(self, C, items: [Item], fileName = 'traindata.csv', backTime = 0, overwrite = False):
+    def convertToDict(self, C, items: List[Item], fileName = 'traindata.csv', backTime = 0, overwrite = False):
         flatten = lambda t: [elem for sublist in t for elem in sublist]
         labels = [feature+"_"+str(i) for i in range(backTime, -1, -1) for feature in features.keys()]
         labels.append("NextHeuristic")
@@ -59,7 +60,7 @@ class Metaheuristic(object):
         return mh_str
 
 
-def SimulatedAnnealing(kp: Knapsack, items: [Item], n_iterations = 1001, temp = 200, stopCriteria = 10):
+def SimulatedAnnealing(kp: Knapsack, items: List[Item], n_iterations = 1001, temp = 200, stopCriteria = 10):
     np.random.seed(0)
 
     mh = Metaheuristic()
@@ -98,7 +99,7 @@ def SimulatedAnnealing(kp: Knapsack, items: [Item], n_iterations = 1001, temp = 
             countNone += 1
     return kp_best, mh_best
 
-def RandomSearch(kp: Knapsack, items = [Item], stopCriteria = 10):
+def RandomSearch(kp: Knapsack, items: List[Item], stopCriteria = 10):
     np.random.seed(0)
 
     mh = Metaheuristic()
@@ -120,7 +121,7 @@ def RandomSearch(kp: Knapsack, items = [Item], stopCriteria = 10):
         mh.addHeuristic(nextHeuristic)
     return kp, mh
 
-def solveMetaheuristic(method: str, kp: Knapsack, items: [Item], saveMetaheuristic = False, fileName = 'traindata.csv', backTime = 0, overwrite = False):
+def solveMetaheuristic(method: str, kp: Knapsack, items: List[Item], saveMetaheuristic = False, fileName = 'traindata.csv', backTime = 0, overwrite = False):
     mh = Metaheuristic()
     C = kp.getCapacity()
     items_copy = items.copy()
