@@ -1,52 +1,50 @@
-import pandas as pd
-from LSTM import generateTrainDataset
+from LSTM import generateTrainDataset, buildModel
 from knapsack import  Knapsack, generateItemsList
-from IO import load_data, saveDictCSV
+from IO import load_data, obtainFilenames, saveDictCSV
 from solvers import solver
-from metaheuristic import solveMetaheuristic
-from hyperheuristic import hyperheuristicSolver
-import numpy as np
+from simpleHeuristic import heuristicComparison
+from hyperheuristic import hyperheuristicSolverMH
+from time import perf_counter
 
 if __name__ == '__main__':
-    tapia_path = "C:/Users/Angel/Documents/Tec/1Semester/Fundamentos/Knapsack_project/Hyper-heuristic-Knapsack/Instances/"
-    dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/Instances/"
-
-    heuristics = ['default',  'min_weight','max_value',  'max_ratio']
-    capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
+    tapia_path = "C:/Users/Angel/Documents/Tec/1Semester/Fundamentos/Knapsack_project/Hyper-heuristic-Knapsack/"
+    dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/"    
     
-    solverMethods = ['SimulatedAnnealing', 'RandomSearch', 'hyperheuristic', 'IP']
-    maxObtained = dict()
+    #generateTrainDataset("traindata.csv", True, "OrtizBayliss")
+    #buildModel(tapia_path+"lstm_model.h5", tapia_path+"traindata.csv")
+
+    heuristics = list(heuristicComparison.keys())
+    resultsTestDict = dict()    
+    solverMethods = ['SimulatedAnnealing', 'RandomSearch', 'IP', 'hyperheuristic']
     for method in solverMethods:
-        maxObtained[method] = 0
+        resultsTestDict[method] = []
+        resultsTestDict[method+"_time"] = []
+    for heuristic in heuristics:
+        resultsTestDict[heuristic] = []
 
-    #generateTrainDataset()
-        
-    capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
-    kp = Knapsack(capacity)
-    items = generateItemsList(values_set, weight_set)
-    #print(hyperheuristicSolver(kp, items, trainModel = True))
+    instances = obtainFilenames(tapia_path, 'Pisinger')
+    for instance in instances:
+        capacity, lenItems, values_set, weight_set = load_data(instance)
 
-    resultsTestDict = dict()
-    for i in range(1, 31):
-        capacity, lenItems, values_set, weight_set = load_data(tapia_path+"Pisinger/pisinger_"+str(i)+".kp")
-
-        ans = []
-        for method in solverMethods:
+        for method in solverMethods[:3]:
             kp = Knapsack(capacity)
             items = generateItemsList(values_set, weight_set)
+
+            start = perf_counter()
             result = solver(method, kp, items)
-            ans.append(result)
-            if method not in resultsTestDict:
-                resultsTestDict[method] = []
+            end = perf_counter()
             resultsTestDict[method].append(result)
-
-#        maxObtained[solverMethods[np.argmax(ans)]] += 1
+            resultsTestDict[method+"_time"].append(end-start)
         
-#        kp = Knapsack(capacity)
-#        items = generateItemsList(values_set, weight_set)
-#        ans.append(solver('IP', kp, items))
-#        print(ans)
-#    print(maxObtained)
+        kp = Knapsack(capacity)
+        items = generateItemsList(values_set, weight_set)
+        start = perf_counter()
+        kp, mh = hyperheuristicSolverMH(kp, items)
+        end = perf_counter()
+        mhstats = mh.stats()
+        resultsTestDict['hyperheuristic'].append(kp.getValue())
+        resultsTestDict['hyperheuristic_time'].append(end-start)
+        for heuristic in heuristics:
+            resultsTestDict[heuristic].append(mhstats[heuristic])
 
-    saveDictCSV("testPisinger-MoreHeuristicsProbabilityNoLimited.csv", resultsTestDict)
-#   
+    saveDictCSV("testPisinger-Test.csv", resultsTestDict)

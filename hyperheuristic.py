@@ -31,7 +31,7 @@ class Hyperheuristic(object):
         ramon_path = dany_path 
         modelPath = tapia_path+modelTrainedFilename
         trainPath = tapia_path+trainDataFilename
-
+        np.random.seed(0)
         self.choiceSelector = choiceSelector
         if os.stat(modelPath).st_size == 0 or trainModel:
             buildModel(modelPath, trainPath)
@@ -40,8 +40,7 @@ class Hyperheuristic(object):
         self.previousStates = []
         df = pd.read_csv(trainPath, dtype={'ID': str})
         self.n_id = len(df.ID.unique())
-        self.timeline = dict()
-        np.random.seed(0)
+        self.timeline = dict()    
     
     def getHeuristic(self, items: List[Item]):
         # Buscar bolsita que se le parece
@@ -76,7 +75,7 @@ class Hyperheuristic(object):
         self.timeline[inputModel].add(nextMove)
         return list(heuristicComparison.keys())[nextMove]
 
-def hyperheuristicSolver(kp: Knapsack, items: List[Item], choiceSelector = 'probability', trainModel = False, stopCritaria = 10):
+def hyperheuristicSolverMH(kp: Knapsack, items: List[Item], choiceSelector = 'probability', trainModel = False, stopCritaria = 10):
     hh = Hyperheuristic(choiceSelector, trainModel)
     mh = Metaheuristic()
     countNones = 0
@@ -93,4 +92,8 @@ def hyperheuristicSolver(kp: Knapsack, items: List[Item], choiceSelector = 'prob
         if kp_best.getValue() < kp.getValue():
             kp_best = kp.copy()
             mh_best = mh.copy()
-    return kp_best
+    return kp_best, mh_best
+
+def hyperheuristicSolver(kp: Knapsack, items: List[Item], choiceSelector = 'probability', trainModel = False, stopCritaria = 10):
+    kp, mh = hyperheuristicSolverMH(kp, items, choiceSelector, trainModel, stopCritaria)
+    return kp

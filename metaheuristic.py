@@ -52,6 +52,14 @@ class Metaheuristic(object):
         mh_copy = Metaheuristic()
         mh_copy.sequenceHeuristics = self.sequenceHeuristics.copy()
         return mh_copy
+    
+    def stats(self):
+        mhstats = dict()
+        for heuristic in list(heuristicComparison.keys()):
+            mhstats[heuristic] = 0
+        for heuristic in self.sequenceHeuristics:
+            mhstats[heuristic] += 1
+        return mhstats
 
     def __str__(self):
         mh_str = "mh:\t"

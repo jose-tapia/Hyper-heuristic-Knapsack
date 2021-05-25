@@ -1,6 +1,6 @@
 from metaheuristic import solveMetaheuristic
 from knapsack import Knapsack, generateItemsList
-from IO import load_data
+from IO import load_data, obtainFilenames
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
@@ -77,11 +77,12 @@ def generateTrainDataset(trainFilename = 'traindata.csv', overwrite = True, inst
     tapia_path = "C:/Users/Angel/Documents/Tec/1Semester/Fundamentos/Knapsack_project/Hyper-heuristic-Knapsack/"
     dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/"
     ramon_path = dany_path 
-    if instances == 'OrtizBayliss':
-        for i in range(1, 5):
-            for j in range(25):
-                capacity, lenItems, values_set, weight_set = load_data(tapia_path+"Instances/OrtizBayliss/ortizbayliss_"+str(i)+"_"+str(j)+".kp")
-                kp = Knapsack(capacity)
-                items = generateItemsList(values_set, weight_set)
-                B = solveMetaheuristic("SimulatedAnnealing", kp, items, saveMetaheuristic = True, overwrite = (overwrite and i == 1 and j == 0))
+    if type(instances) == str: 
+        instances = obtainFilenames(tapia_path, instances)
+    for filePath in instances:    
+        capacity, lenItems, values_set, weight_set = load_data(filePath)
+        kp = Knapsack(capacity)
+        items = generateItemsList(values_set, weight_set)
+        solveMetaheuristic("SimulatedAnnealing", kp, items, saveMetaheuristic = True, overwrite = overwrite)
+        overwrite = False   
     
