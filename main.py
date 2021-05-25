@@ -11,18 +11,19 @@ if __name__ == '__main__':
     dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/Instances/"
 
     heuristics = ['default',  'min_weight','max_value',  'max_ratio']
+    capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
     
     solverMethods = ['SimulatedAnnealing', 'RandomSearch', 'hyperheuristic']
     maxObtained = dict()
     for method in solverMethods:
         maxObtained[method] = 0
 
-    generateTrainDataset()
+#    generateTrainDataset()
         
-    capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
-    kp = Knapsack(capacity)
-    items = generateItemsList(values_set, weight_set)
-    print(solver('hyperheuristic', kp, items, True))
+#    capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
+#    kp = Knapsack(capacity)
+#    items = generateItemsList(values_set, weight_set)
+#    print(solver('hyperheuristic', kp, items, True))
 
 
     
@@ -34,6 +35,7 @@ if __name__ == '__main__':
             kp = Knapsack(capacity)
             items = generateItemsList(values_set, weight_set)
             ans.append(solver(method, kp, items))
+        print(ans)
         maxObtained[solverMethods[np.argmax(ans)]] += 1
     print(maxObtained)
 
@@ -43,7 +45,6 @@ if __name__ == '__main__':
 #    print("SA < RS", AB)
 #    print("RS < SA", BA)
  
-    capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
     
 
 

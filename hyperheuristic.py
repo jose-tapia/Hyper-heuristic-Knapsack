@@ -1,3 +1,4 @@
+from segmentTree import STItems
 from typing import List
 from knapsack import Knapsack, Item
 from simpleHeuristic import SimpleHeuristic, heuristicComparison
@@ -70,4 +71,22 @@ def hyperheuristicSolver(kp: Knapsack, items: List[Item], trainModel = False, st
         mh.addHeuristic(nextHeuristic)
     return kp
 
-        
+
+def hyperheuristicSolverWithST(kp: Knapsack, items: List[Item], trainModel = False, stopCritaria = 10):
+    hh = Hyperheuristic(trainModel)
+    mh = Metaheuristic()
+    sh = STItems(items)
+    countNones = 0
+    while countNones < stopCritaria:
+        nextHeuristic = hh.getHeuristic(items)
+        nextItem, idx = sh.nextItem(nextHeuristic, kp.getCapacity())
+        if nextItem == None:
+            countNones += 1
+            continue
+        countNones = 0
+        sh.eraseItem(idx)
+        kp.pack(nextItem)
+        items.remove(nextItem)
+        mh.addHeuristic(nextHeuristic)
+    return kp
+
