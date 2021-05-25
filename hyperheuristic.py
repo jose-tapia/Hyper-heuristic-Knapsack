@@ -5,7 +5,7 @@ from simpleHeuristic import SimpleHeuristic, heuristicComparison
 from metaheuristic import Metaheuristic
 from features import getAllFeatures, getFeature
 from tensorflow import keras
-from LSTMModel import buildModel
+from LSTM import buildModel
 import numpy as np
 import pandas as pd
 import os

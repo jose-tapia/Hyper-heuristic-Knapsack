@@ -1,5 +1,5 @@
 import pandas as pd
-from LSTMModel import generateTrainDataset
+from LSTM import generateTrainDataset
 from knapsack import  Knapsack, generateItemsList
 from IO import load_data, saveDictCSV
 from solvers import solver
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     heuristics = ['default',  'min_weight','max_value',  'max_ratio']
     capacity, lenItems, values_set, weight_set = load_data(tapia_path+"test.txt")
     
-    solverMethods = ['SimulatedAnnealing', 'RandomSearch', 'hyperheuristic']
+    solverMethods = ['SimulatedAnnealing', 'RandomSearch', 'hyperheuristic', 'IP']
     maxObtained = dict()
     for method in solverMethods:
         maxObtained[method] = 0
@@ -39,10 +39,14 @@ if __name__ == '__main__':
             if method not in resultsTestDict:
                 resultsTestDict[method] = []
             resultsTestDict[method].append(result)
-        print(ans)
 
-        maxObtained[solverMethods[np.argmax(ans)]] += 1
-    print(maxObtained)
+#        maxObtained[solverMethods[np.argmax(ans)]] += 1
+        
+#        kp = Knapsack(capacity)
+#        items = generateItemsList(values_set, weight_set)
+#        ans.append(solver('IP', kp, items))
+#        print(ans)
+#    print(maxObtained)
 
     saveDictCSV("testPisinger-MoreHeuristicsProbabilityNoLimited.csv", resultsTestDict)
 #   

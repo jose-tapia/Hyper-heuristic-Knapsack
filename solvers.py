@@ -4,6 +4,24 @@ from simpleHeuristic import SimpleHeuristic
 from metaheuristic import solveMetaheuristic
 from hyperheuristic import HyperheuristicNaive, hyperheuristicSolver
 from exactSolvers import kpBacktracking, kpDP
+from ortools.algorithms import pywrapknapsack_solver
+
+def kpIP(C: int, items: List[Item]):
+    solver = pywrapknapsack_solver.KnapsackSolver(
+    pywrapknapsack_solver.KnapsackSolver.
+    KNAPSACK_MULTIDIMENSION_CBC_MIP_SOLVER, 'KnapsackExample')
+    
+    profit = [item.getProfit() for item in items]
+    weights = [[item.getWeight() for item in items]]
+    capacities = [C]
+    solver.Init(profit, weights, capacities)
+    computed_value = solver.Solve()
+
+    kp = Knapsack(C)
+    for i, item in enumerate(items):
+        if solver.BestSolutionContains(i):
+            kp.pack(item)
+    return kp
 
 def ConstructiveSolution(kp: Knapsack, items: List[Item], itemSelector):
     nextItem = itemSelector.nextItem(kp, items)
@@ -31,5 +49,7 @@ def solver(method: str, kp: Knapsack, items: List[Item], additionalArgs = None):
         return kpBacktracking(kp.getCapacity(), items).getValue()
     elif method == 'DP':
         return kpDP(kp.getCapacity(), items).getValue()
+    elif method == 'IP':
+        return kpIP(kp.getCapacity(), items).getValue()
     else:
         return 0
