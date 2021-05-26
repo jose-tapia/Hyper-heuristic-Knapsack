@@ -12,7 +12,7 @@ if __name__ == '__main__':
     
     #generateTrainDataset("traindata.csv", True, "OrtizBayliss")
     #buildModel(tapia_path+"lstm_model.h5", tapia_path+"traindata.csv")
-
+    
     heuristics = list(heuristicComparison.keys())
     resultsTestDict = dict()    
     solverMethods = ['SimulatedAnnealing', 'RandomSearch', 'IP', 'hyperheuristic']
@@ -22,8 +22,8 @@ if __name__ == '__main__':
     for heuristic in heuristics:
         resultsTestDict[heuristic] = []
 
-    instances = obtainFilenames(tapia_path, 'Pisinger')
-    for instance in instances:
+    instances = obtainFilenames(tapia_path, 'Martello')
+    for instance in instances[:230]:
         capacity, lenItems, values_set, weight_set = load_data(instance)
 
         for method in solverMethods[:3]:
@@ -47,4 +47,4 @@ if __name__ == '__main__':
         for heuristic in heuristics:
             resultsTestDict[heuristic].append(mhstats[heuristic])
 
-    saveDictCSV("testPisinger-Test.csv", resultsTestDict)
+    saveDictCSV("testMartello-Performance-1.csv", resultsTestDict)
