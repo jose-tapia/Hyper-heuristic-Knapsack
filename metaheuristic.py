@@ -68,9 +68,7 @@ class Metaheuristic(object):
         return mh_str
 
 
-def SimulatedAnnealing(kp: Knapsack, items: List[Item], n_iterations = 1001, temp = 200, stopCriteria = 10):
-    np.random.seed(0)
-
+def SimulatedAnnealing(kp: Knapsack, items: List[Item], n_iterations = 101, temp = 200, stopCriteria = 10):
     mh = Metaheuristic()
     heuristicNames = list(heuristicComparison.keys())
     countNone = 0
@@ -96,9 +94,14 @@ def SimulatedAnnealing(kp: Knapsack, items: List[Item], n_iterations = 1001, tem
             mh_best = mh.copy()
             mh_best.addHeuristic(nextHeuristic)
 
-        diff = kp.getValue() - kp_candidate.getValue() 
-        t = temp/np.log(i+1)
-        metropolis = np.exp(-diff/t)
+        diff = kp.getValue() - kp_candidate.getValue()
+        t = temp/i
+        if -10 <= -diff/t and -diff/t <= 0:
+            metropolis = np.exp(-diff/t)
+        elif -diff/t <= -10:
+            metropolis = 0
+        else:
+            metropolis = 1.1
         if diff < 0 or np.random.rand() < metropolis:
             kp = kp_candidate
             items = items_candidate
@@ -108,8 +111,6 @@ def SimulatedAnnealing(kp: Knapsack, items: List[Item], n_iterations = 1001, tem
     return kp_best, mh_best
 
 def RandomSearch(kp: Knapsack, items: List[Item], stopCriteria = 10):
-    np.random.seed(0)
-
     mh = Metaheuristic()
     heuristicNames = list(heuristicComparison.keys())
     countNone = 0

@@ -1,6 +1,6 @@
 from typing import List
 from knapsack import Item, Knapsack
-from simpleHeuristic import SimpleHeuristic
+from simpleHeuristic import SimpleHeuristic, heuristicComparison
 from metaheuristic import solveMetaheuristic
 from hyperheuristic import HyperheuristicNaive, hyperheuristicSolver
 from exactSolvers import kpBacktracking, kpDP
@@ -15,6 +15,7 @@ def kpIP(C: int, items: List[Item]):
     weights = [[item.getWeight() for item in items]]
     capacities = [C]
     solver.Init(profit, weights, capacities)
+    #solver.set_time_limit(20)
     computed_value = solver.Solve()
 
     kp = Knapsack(C)
@@ -51,5 +52,8 @@ def solver(method: str, kp: Knapsack, items: List[Item], additionalArgs = None):
         return kpDP(kp.getCapacity(), items).getValue()
     elif method == 'IP':
         return kpIP(kp.getCapacity(), items).getValue()
+    elif method in list(heuristicComparison.keys()):
+        simple_heuristic = SimpleHeuristic(method)
+        return ConstructiveSolution(kp, items, simple_heuristic).getValue()
     else:
         return 0

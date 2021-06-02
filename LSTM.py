@@ -4,6 +4,7 @@ from IO import load_data, obtainFilenames
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
+from keras.layers import Bidirectional
 import tensorflow
 import pandas as pd
 
@@ -56,7 +57,7 @@ def train_lstm(data, n_id, n_output, lag, neuron1, neuron2, batch_size, epochs):
     X_train = X_train.reshape((X_train.shape[0], lag, n_var))
     # design the neural network
     model = Sequential()
-    model.add(LSTM(neuron1, activation='tanh', input_shape=(X_train.shape[1], X_train.shape[2])))
+    model.add(Bidirectional(LSTM(neuron1, activation='tanh', input_shape=(X_train.shape[1], X_train.shape[2]))))
     model.add(Dense(n_output, activation='softmax'))
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     # fit network
@@ -83,6 +84,6 @@ def generateTrainDataset(trainFilename = 'traindata.csv', overwrite = True, inst
         capacity, lenItems, values_set, weight_set = load_data(filePath)
         kp = Knapsack(capacity)
         items = generateItemsList(values_set, weight_set)
-        solveMetaheuristic("SimulatedAnnealing", kp, items, saveMetaheuristic = True, overwrite = overwrite)
+        solveMetaheuristic("SimulatedAnnealing", kp, items, saveMetaheuristic = True, fileName = trainFilename, overwrite = overwrite)
         overwrite = False   
     

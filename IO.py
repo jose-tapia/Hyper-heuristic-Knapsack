@@ -58,12 +58,17 @@ def saveDataCSV(fileName: str, trainData: dict, labels: List[str], overwrite = T
     except IOError:
         print("I/O error")    
 
-def obtainFilenames(dirPath, dataset = 'Pisinger'):
+def obtainFilenames(dirPath, dataset = 'Pisinger', qty = 1, shift = 0):
     if dataset == 'Pisinger':
         return [dirPath+"Instances/Pisinger/pisinger_"+str(i)+".kp" for i in range(31)]
     elif dataset == 'OrtizBayliss':
         return [dirPath+"Instances/OrtizBayliss/ortizbayliss_"+str(i)+"_"+str(j)+".kp" for i in range(1, 5) for j in range(25)]
     elif dataset == 'Martello':
         return [dirPath+"Instances/Martello/martello_"+str(i)+"_"+str(j)+".kp" for i in range(1, 15) for j in range(50)]
+    elif dataset == 'MiniMartello':
+        return [dirPath+"Instances/Martello/martello_"+str(i)+"_"+str(j+10*k+shift)+".kp" for i in list(range(1, 10))+list(range(13, 15)) for j in range(qty) for k in range(3)]
     else:
         return []
+
+def obtainDirectory(dirPath):
+    return list(map(lambda filename: dirPath+filename, os.listdir(dirPath)))

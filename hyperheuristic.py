@@ -31,7 +31,6 @@ class Hyperheuristic(object):
         ramon_path = dany_path 
         modelPath = tapia_path+modelTrainedFilename
         trainPath = tapia_path+trainDataFilename
-        np.random.seed(0)
         self.choiceSelector = choiceSelector
         if os.stat(modelPath).st_size == 0 or trainModel:
             buildModel(modelPath, trainPath)
@@ -75,8 +74,7 @@ class Hyperheuristic(object):
         self.timeline[inputModel].add(nextMove)
         return list(heuristicComparison.keys())[nextMove]
 
-def hyperheuristicSolverMH(kp: Knapsack, items: List[Item], choiceSelector = 'probability', trainModel = False, stopCritaria = 10):
-    hh = Hyperheuristic(choiceSelector, trainModel)
+def hyperheuristicSolverHH(kp: Knapsack, items: List[Item], hh: Hyperheuristic, stopCritaria = 10):
     mh = Metaheuristic()
     countNones = 0
     kp_best = kp.copy()
@@ -93,6 +91,11 @@ def hyperheuristicSolverMH(kp: Knapsack, items: List[Item], choiceSelector = 'pr
             kp_best = kp.copy()
             mh_best = mh.copy()
     return kp_best, mh_best
+
+
+def hyperheuristicSolverMH(kp: Knapsack, items: List[Item], choiceSelector = 'maximum', trainModel = False, modelTrainedFilename = 'model_lstm.h5', stopCritaria = 10):
+    hh = Hyperheuristic(choiceSelector, trainModel, modelTrainedFilename)
+    return hyperheuristicSolverHH(kp, items, hh)
 
 def hyperheuristicSolver(kp: Knapsack, items: List[Item], choiceSelector = 'probability', trainModel = False, stopCritaria = 10):
     kp, mh = hyperheuristicSolverMH(kp, items, choiceSelector, trainModel, stopCritaria)
