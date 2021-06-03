@@ -1,65 +1,62 @@
-from LSTM import generateTrainDataset, buildModel
-from knapsack import  Knapsack, generateItemsList
-from IO import load_data, obtainDirectory, obtainFilenames, saveDictCSV
-from solvers import solver
-from simpleHeuristic import heuristicComparison
-from hyperheuristic import Hyperheuristic, hyperheuristicSolverMH, hyperheuristicSolverHH
 from time import perf_counter
 import numpy as np
+from Solvers.Heuristics.hyperheuristic import (Hyperheuristic,
+                                               hyperheuristicSolverHH)
+from Solvers.Heuristics.LSTM import generateTrainDataset
+from Solvers.Heuristics.simpleHeuristic import heuristicComparison
+from Solvers.solvers import solver
+from Utils.IO import loadInstance, obtainFilenames, saveDictCSV, tapia_path
+from Utils.knapsack import Knapsack, generateItemList
 
 if __name__ == '__main__':
-    tapia_path = "C:/Users/Angel/Documents/Tec/1Semester/Fundamentos/Knapsack_project/Hyper-heuristic-Knapsack/"
-    dany_path =  "/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/"    
-    
 
+    # To replicate the results reported, use trainPath = 'paper_traindata.csv',
+    # skipping the first and set the testDataset = 'Pisinger'.
+
+    trainDataset = 'OrtizBayliss_Train'
+    testDataset = 'OrtizBayliss_Test'
+    trainPath = 'Cache/traindata.csv' 
+    modelPath = 'Cache/hh_lstm.h5'
+    resultPath = 'Cache/Performance.csv'
+
+    # First phase
     np.random.seed(0)
-    #generateTrainDataset("traindata.csv", True, "OrtizBayliss")
+    generateTrainDataset(trainPath, True, trainDataset)
 
-    #buildModel(tapia_path+"lstm_model.h5", tapia_path+"traindata.csv")
-    instances = obtainDirectory(tapia_path+"Instances/kplib/")
-    heuristics = list(heuristicComparison.keys())
-    resultsTestDict = dict()    
-#    iteratMethods = [1, 1, 1, 1, 10, 10, 1, 10]
-    iteratMethods = [1, 1, 1, 1, 10]
-#    solverMethods = heuristics[:4]+['SimulatedAnnealing', 'RandomSearch', 'IP', 'hyperheuristic']
-    solverMethods = heuristics[:4]+["hyperheuristic"]
-    for method, n_iter in zip(solverMethods, iteratMethods):
-        for i in range(n_iter):
-            resultsTestDict[method+"_"+str(i)] = []
-            resultsTestDict[method+"_time_"+str(i)] = []
-    #for heuristic in heuristics:
-    #    resultsTestDict[heuristic] = []
+    # Second phase
     HH = []
     for i in range(10):
-        HH.append(Hyperheuristic('probability', trainModel = True))
-    instances = obtainDirectory(tapia_path+"Instances/kplib/")
-    for instance in instances:
-        capacity, lenItems, values_set, weight_set = load_data(instance)
+        HH.append(Hyperheuristic('probability', trainModel = True, modelFilename = modelPath, trainFilename = trainPath, prevStates = 2))
 
-        for method, n_iter in zip(solverMethods, iteratMethods):
-            for i in range(n_iter):
-                kp = Knapsack(capacity)
-                items = generateItemsList(values_set, weight_set)
+    # Third phase
+    heuristics = list(heuristicComparison.keys())[:4]
+    resultsTestDict = dict()    
+    methods = heuristics+['SimulatedAnnealing', 'RandomSearch', 'Hyperheuristic', 'MILP']
+    methodIterations = [1, 1, 1, 1, 10, 10, 10, 1]
+    for method in methods:
+        resultsTestDict[method] = []
+        resultsTestDict[f'{method}_time'] = []
+        
+    instances = obtainFilenames(tapia_path, testDataset)
+    for instance in instances:
+        n, W, weights, profits = loadInstance(instance)
+
+        for method, iterations in zip(methods, methodIterations):
+            sumResults, sumTime = 0, 0
+            for i in range(iterations):
+                kp = Knapsack(W)
+                items = generateItemList(weights, profits)
 
                 start = perf_counter()
-                if method == 'hyperheuristic':
+                if method == 'Hyperheuristic':
                     kp, mh = hyperheuristicSolverHH(kp, items, HH[i])
                     result = kp.getValue()
                 else:
                     result = solver(method, kp, items)
                 end = perf_counter()
-                resultsTestDict[method+"_"+str(i)].append(result)
-                resultsTestDict[method+"_time_"+str(i)].append(end-start)
-        
-        #kp = Knapsack(capacity)
-        #items = generateItemsList(values_set, weight_set)
-        #start = perf_counter()
-        #kp, mh = hyperheuristicSolverMH(kp, items, modelTrainedFilename = 'lstm_model_Martello.h5')
-        #end = perf_counter()
-        #mhstats = mh.stats()
-        #resultsTestDict['hyperheuristic'].append(kp.getValue())
-        #resultsTestDict['hyperheuristic_time'].append(end-start)
-        #for heuristic in heuristics:
-        #    resultsTestDict[heuristic].append(mhstats[heuristic])
-
-    saveDictCSV("testOrtizBayliss-Performance.csv", resultsTestDict)
+                sumResults += result 
+                sumTime += end-start
+            resultsTestDict[method].append(sumResults/iterations)
+            resultsTestDict[f'{method}_time'].append(sumTime/iterations)
+    
+    saveDictCSV(resultPath, resultsTestDict)

@@ -1,0 +1,2 @@
+,default,default_time,min_weight,min_weight_time,max_value,max_value_time,max_ratio,max_ratio_time,SimulatedAnnealing,SimulatedAnnealing_time,RandomSearch,RandomSearch_time,Hyperheuristic,Hyperheuristic_time,MILP,MILP_time
+0,16736.0,0.0018138000000078591,17188.0,0.0031644000000028427,16042.0,0.001971400000002177,17188.0,0.003250100000002476,16849.7,0.007076019999993832,16887.6,0.004509960000004298,17242.5,11.917607970000002,17556.0,0.03789739999999142
