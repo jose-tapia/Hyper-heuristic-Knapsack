@@ -58,9 +58,9 @@ class Metaheuristic(object):
         mh_copy.sequenceHeuristics = self.sequenceHeuristics.copy()
         return mh_copy
     def __str__(self):
-        mh_str = "mh:\t\n"
+        mh_str = 'mh:\t\n'
         for sh in self.sequenceHeuristics:
-            mh_str += "\t"+sh+'\n'
+            mh_str += '\t'+sh+'\n'
         return mh_str
 
 

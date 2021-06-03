@@ -79,6 +79,6 @@ def generateTrainDataset(trainFilename = 'traindata.csv', overwrite = True, inst
         kp = Knapsack(W)
         items = generateItemList(weights, profits)
         ##np.random.seed(0)
-        solveMetaheuristic("SimulatedAnnealing", kp, items, saveMetaheuristic = True, fileName = trainFilename, overwrite = overwrite)
+        solveMetaheuristic('SimulatedAnnealing', kp, items, saveMetaheuristic = True, fileName = trainFilename, overwrite = overwrite)
         overwrite = False   
     

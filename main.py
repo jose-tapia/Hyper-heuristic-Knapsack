@@ -15,6 +15,7 @@ if __name__ == '__main__':
 
     trainDataset = 'OrtizBayliss_Train'
     testDataset = 'OrtizBayliss_Test'
+    testDataset = trainDataset
     trainPath = 'Cache/traindata.csv' 
     modelPath = 'Cache/hh_lstm.h5'
     resultPath = 'Cache/Performance.csv'
@@ -37,7 +38,7 @@ if __name__ == '__main__':
         resultsTestDict[method] = []
         resultsTestDict[f'{method}_time'] = []
         
-    instances = obtainFilenames(tapia_path, testDataset)
+    instances = obtainFilenames(tapia_path, testDataset)[:1]
     for instance in instances:
         n, W, weights, profits = loadInstance(instance)
 

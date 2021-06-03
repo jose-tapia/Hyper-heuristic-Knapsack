@@ -19,7 +19,7 @@ class HyperheuristicNaive(object):
     
     def getHeuristic(self, items: List[Item]):
         pastHeuristic = self.currentHeuristic
-        if getFeature("NORM_CORRELATION", items) > 0.5:
+        if getFeature('NORM_CORRELATION', items) > 0.5:
             self.currentHeuristic += 1
             self.currentHeuristic %= len(self.heuristics)
         return self.heuristics[pastHeuristic]

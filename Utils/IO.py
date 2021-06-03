@@ -9,7 +9,7 @@ dany_path =  '/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_reposi
 ramon_path = dany_path
 
 def loadInstance(path):
-    file = open(path, "r")
+    file = open(path, 'r')
     data = file.readlines()
     weights, profits = [], []
     
@@ -33,7 +33,7 @@ def saveDataCSV(fileName: str, trainData: dict, labels: List[str], overwrite = T
     try:
         labels += ['ID']
         if overwrite is False:    
-            file = open(csvPath, "r")
+            file = open(csvPath, 'r')
             if len(file.readline().split(',')) != len(labels):
                 overwrite = True
             file.close()
@@ -52,7 +52,7 @@ def saveDataCSV(fileName: str, trainData: dict, labels: List[str], overwrite = T
                 elem['ID'] = instanceNumber
                 writer.writerow(elem)
     except IOError:
-        print("I/O Error: The CSV file was not able to read or write.")    
+        print('I/O Error: The CSV file was not able to read or write.')    
 
 def obtainFilenames(dirPath, dataset = 'Pisinger'):
     filesPath = []
