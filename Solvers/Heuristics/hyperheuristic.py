@@ -44,6 +44,10 @@ class Hyperheuristic(object):
         df = pd.read_csv(trainPath, dtype={'ID': str})
         self.n_id = len(df.ID.unique())
     
+    def reset(self):
+        self.previousStates = []
+        self.timeline = dict()
+    
     def getHeuristic(self, items: List[Item]):
         newState = np.pad(getAllFeatures(items), (0, self.n_id), 'constant')
         self.previousStates.append(newState)
@@ -78,6 +82,7 @@ class Hyperheuristic(object):
         return list(heuristicComparison.keys())[nextMove]
 
 def hyperheuristicSolverHH(kp: Knapsack, items: List[Item], hh: Hyperheuristic, stopCritaria = 10):
+    hh.reset()
     mh = Metaheuristic()
     kp_best = kp.copy()
     mh_best = mh.copy()

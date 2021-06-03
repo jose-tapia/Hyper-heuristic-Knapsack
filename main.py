@@ -10,18 +10,20 @@ from Utils.knapsack import Knapsack, generateItemList
 
 if __name__ == '__main__':
 
-    # To replicate the results reported, use trainPath = 'paper_traindata.csv',
-    # skipping the first and set the testDataset = 'Pisinger'.
+    # To replicate the results reported, use:
+    #   trainDataset = 'OrtizBayliss_Train'  
+    #   testDataset = 'Pisinger'
+    #   trainPath = 'Cache/traindata.csv'
+    #   modelPath = 'Cache/hh_lstm.h5'
+    #   resultPath = 'Cache/Performance.csv'
 
     trainDataset = 'OrtizBayliss_Train'
-    testDataset = 'OrtizBayliss_Test'
-    testDataset = trainDataset
+    testDataset = 'Pisinger'
     trainPath = 'Cache/traindata.csv' 
     modelPath = 'Cache/hh_lstm.h5'
     resultPath = 'Cache/Performance.csv'
 
     # First phase
-    np.random.seed(0)
     generateTrainDataset(trainPath, True, trainDataset)
 
     # Second phase
@@ -38,7 +40,7 @@ if __name__ == '__main__':
         resultsTestDict[method] = []
         resultsTestDict[f'{method}_time'] = []
         
-    instances = obtainFilenames(tapia_path, testDataset)[:1]
+    instances = obtainFilenames(tapia_path, testDataset)
     for instance in instances:
         n, W, weights, profits = loadInstance(instance)
 

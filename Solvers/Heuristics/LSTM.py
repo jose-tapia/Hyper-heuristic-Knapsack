@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import tensorflow
 from keras.layers import LSTM, Bidirectional, Dense
@@ -78,7 +79,7 @@ def generateTrainDataset(trainFilename = 'traindata.csv', overwrite = True, inst
         n, W, weights, profits = loadInstance(filePath)
         kp = Knapsack(W)
         items = generateItemList(weights, profits)
-        ##np.random.seed(0)
+        np.random.seed(0)
         solveMetaheuristic('SimulatedAnnealing', kp, items, saveMetaheuristic = True, fileName = trainFilename, overwrite = overwrite)
         overwrite = False   
     
