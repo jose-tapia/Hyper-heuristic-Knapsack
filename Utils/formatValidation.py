@@ -1,6 +1,8 @@
 from Utils.IO import loadInstance, obtainFilenames, tapia_path
 
+
 def validateFormat(path):
+    # Verify the correctness of the format for each instance
     n, W, weights, profits = loadInstance(path)
     if n < 0:
         print('Error: Size negative')

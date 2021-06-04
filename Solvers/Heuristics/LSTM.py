@@ -7,6 +7,7 @@ from Solvers.Heuristics.metaheuristic import solveMetaheuristic
 from Utils.IO import loadInstance, obtainFilenames, tapia_path
 from Utils.knapsack import Knapsack, generateItemList
 
+
 def series_to_supervised(data, n_in = 1, n_out = 1, dropnan = True):
     # Get the number of variables in the dataset
     if type(data) == list:
@@ -63,22 +64,32 @@ def train_lstm(data, n_id, n_output, lag, hiddenLayer_neurons, batch_size, epoch
     return model
 
 def buildModel(modelPath, trainPath):
+    # Prepare the dataframe from 'trainPath' file to train the model
     df = pd.read_csv(trainPath, dtype = {'ID': str})
     n_id = len(df.ID.unique())
     n_output = len(df.NextHeuristic.unique())
+    # Execute a one-hot encoding process for 'ID' and 'NextHeuristic' columns
     df = create_dummies(df, 'ID', prefix = 'ID')
     df = create_dummies(df, 'NextHeuristic')
     tensorflow.keras.backend.clear_session()
+    # Train the model
     model = train_lstm(df, n_id, n_output, lag = 2, hiddenLayer_neurons = 50, batch_size = 64, epochs = 100)
+    # Save the model in 'modelPath' file
     model.save(modelPath)
 
 def generateTrainDataset(trainFilename = 'traindata.csv', overwrite = True, instances = 'Pisinger'):
     if type(instances) == str: 
+        # Obtain the instances to generate the train dataset of the LSTM model
+        # If type(instances) != str, then instances is a list of strings with 
+        # the filenames considered to generate the train dataset
         instances = obtainFilenames(tapia_path, instances)
+    # Per each instance, execute the Simulated Annealing metaheuristic and 
+    # save the sequence of heuristics generated
     for filePath in instances:    
-        n, W, weights, profits = loadInstance(filePath)
+        _, W, weights, profits = loadInstance(filePath)
         kp = Knapsack(W)
         items = generateItemList(weights, profits)
+        
         np.random.seed(0)
         solveMetaheuristic('SimulatedAnnealing', kp, items, saveMetaheuristic = True, fileName = trainFilename, overwrite = overwrite)
         overwrite = False   

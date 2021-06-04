@@ -4,11 +4,14 @@ from fnmatch import fnmatch
 from typing import List
 import pandas as pd
 
+
+# Directory paths
 tapia_path = 'C:/Users/Angel/Documents/Tec/1Semester/Fundamentos/Knapsack_project/Hyper-heuristic-Knapsack/'
 dany_path =  '/Volumes/GoogleDrive/My Drive/MCCNotes/Jlab projects/GITHUB_repositories/DANY_repositories/Hyper-heuristic-Knapsack/'
 ramon_path = dany_path
 
 def loadInstance(path):
+    # Function to read the instance
     file = open(path, 'r')
     data = file.readlines()
     weights, profits = [], []
@@ -29,6 +32,7 @@ def saveDictCSV(fileName: str, dictData: dict):
 
 
 def saveDataCSV(fileName: str, trainData: dict, labels: List[str], overwrite = True):
+    # Function to save the train dataset for the LSTM model, allowing to overwrite or not the data
     csvPath = tapia_path+fileName
     try:
         labels += ['ID']
@@ -55,6 +59,7 @@ def saveDataCSV(fileName: str, trainData: dict, labels: List[str], overwrite = T
         print('I/O Error: The CSV file was not able to read or write.')    
 
 def obtainFilenames(dirPath, dataset = 'Pisinger'):
+    # Obtain the instance's path for a given dataset
     filesPath = []
     dataset_path = dirPath+'Instances/'+dataset
     for path, _, files in os.walk(dataset_path):

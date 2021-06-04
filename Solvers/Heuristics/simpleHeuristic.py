@@ -1,6 +1,8 @@
 from typing import List
 from Utils.knapsack import Item, Knapsack
 
+
+# Comparison methods for each simple heuristic
 heuristicComparison = {
     'default'   : lambda d, item: False, 
     'min_weight': lambda w, item: w.getWeight() > item.getWeight(), 
@@ -14,9 +16,11 @@ heuristicComparison = {
 class SimpleHeuristic(object):
     def __init__(self, name):
         self.name = name
+        # Boolean variable if the heuristic applies for the packed items
         self.onKP = name in ['max_weight', 'min_value', 'min_ratio']
 
     def nextItem(self, kp: Knapsack, items: List[Item]):
+        # Choice the next packable item
         if self.onKP:
             return None
         idx = None
@@ -30,6 +34,7 @@ class SimpleHeuristic(object):
         if self.name == None:
             return None
         if self.onKP:
+            # Choice the item that will be unpacked from the knapsack
             idx = None
             kp_packed = kp.getPackedItems()
             for i, item in enumerate(kp_packed):
@@ -39,6 +44,7 @@ class SimpleHeuristic(object):
                 items.append(kp.unpack(idx))
             return idx
         else:
+            # Choice the item that will be packed
             idx = None
             for i, item in enumerate(items):
                 if kp.canPack(item):

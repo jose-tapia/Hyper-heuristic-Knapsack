@@ -2,6 +2,8 @@ from typing import List
 import numpy as np
 from Utils.knapsack import Item
 
+
+# Features considered for the characterization of an instance
 featuresCalculation = {
     'NORM_MEAN_WEIGHT'  : lambda w, p: np.mean(w)/np.max(w),
     'NORM_MEDIAN_WEIGHT': lambda w, p: np.median(w)/np.max(w),
@@ -13,6 +15,7 @@ featuresCalculation = {
 }
 
 def getFeature(featureName: str, items: List[Item]):
+    # Calculate the feature for the given instance
     w = [item.getWeight() for item in items]
     p = [item.getProfit() for item in items]
     if featureName in featuresCalculation:
@@ -22,6 +25,7 @@ def getFeature(featureName: str, items: List[Item]):
         return None
 
 def getAllFeatures(items: List[Item]):
+    # Calculate the characterization of the instance
     w = [item.getWeight() for item in items]
     p = [item.getProfit() for item in items]
     return [featureFunction(w, p) for featureFunction in featuresCalculation.values()]
