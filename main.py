@@ -11,7 +11,7 @@ from Utils.knapsack import Knapsack, generateItemList
 
 if __name__ == '__main__':
 
-    # To replicate the results reported, use:
+    # To replicate the reported results, use:
     #   trainDataset = 'OrtizBayliss_Train'  
     #   testDataset = 'Pisinger'
     #   trainPath = 'Cache/traindata.csv'
